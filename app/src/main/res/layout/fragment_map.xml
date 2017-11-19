@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yoon.memoria.Main.Fragment.Map.MapFragment">
+
+   <android.support.v7.widget.Toolbar
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/mapToolbar"
+       android:background="@color/colorPrimary"
+       >
+   </android.support.v7.widget.Toolbar>
+
+   <com.google.android.gms.maps.MapView
+       android:id="@+id/map"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:layout_below="@+id/mapToolbar">
+
+   </com.google.android.gms.maps.MapView>
+</RelativeLayout>

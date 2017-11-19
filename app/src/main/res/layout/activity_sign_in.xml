@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yoon.memoria.SignIn.SignInActivity">
+
+    <LinearLayout
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:text="ID"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="아이디를 입력해주세요"
+                android:id="@+id/ID"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:text="PW"
+                />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="비밀번호를 입력해주세요"
+                android:id="@+id/PW"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="회원가입"
+                android:id="@+id/btn_signup"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그인"
+                android:id="@+id/btn_signin"/>
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
