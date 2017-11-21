@@ -5,4 +5,11 @@ package com.yoon.memoria.History;
  */
 
 public class HistoryContract {
+
+    interface View{
+
+    }
+    interface Presenter{
+
+    }
 }

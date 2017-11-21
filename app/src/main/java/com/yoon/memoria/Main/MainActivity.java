@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         initTabLayout();
         initViewPager();
 
+
         mapPresenter = mapFragment.getPresenter();
         placePresenter = placeFragment.getPresenter();
         myInfoPresenter = myInfoFragment.getPresenter();
