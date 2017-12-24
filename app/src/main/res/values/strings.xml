@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Memoria</string>
+
+    <string name="rationale_title">권한 요청</string>
+    <string name="rationale_location_message"> 서비스를 이용하기 위해서는 <b>위치권한</b>이 필요합니다.</string>
+
+    <string name="rationale_picture_message"> 서비스를 이용하기 위해서는 <b>사진권한</b>이 필요합니다.</string>
+
+    <string name="rationale_denied_message"> 서비스를 이용하기 위해선 권한이 필요합니다.\n\n다음 경로에서 승인해주세요.\n[설정] > [권한]</string>
+    <string name="request_sign_up"> <u>아직 회원이 아니신가요?</u></string>
 </resources>

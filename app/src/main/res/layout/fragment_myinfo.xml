@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +9,132 @@
         android:layout_height="wrap_content"
         android:id="@+id/myinfoToolbar"
         android:background="@color/colorPrimary"
+        android:layout_alignParentTop="true"
         >
     </android.support.v7.widget.Toolbar>
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/myinfoToolbar"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/myProfile"
+                android:layout_weight="1"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/nickname_myinfo"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="NICKNAME"
+                    android:textStyle="bold"
+                    android:textSize="16dp"
+                    android:paddingTop="40dp"
+                    android:paddingBottom="10dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/nickname_myinfo"
+                    android:orientation="horizontal">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/posting_myinfo"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:paddingTop="20dp"
+                            android:text="게시글 수"
+                            android:textStyle="bold"
+                            android:textSize="11dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/postingNum_myinfo"
+                            android:layout_below="@+id/posting_myinfo"
+                            android:paddingTop="12dp"
+                            android:layout_centerHorizontal="true"
+                            android:text="0"/>
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/following_myinfo"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:paddingTop="20dp"
+                            android:text="팔로잉 수"
+                            android:textStyle="bold"
+                            android:textSize="11dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/followingNum_myinfo"
+                            android:layout_below="@+id/following_myinfo"
+                            android:paddingTop="12dp"
+                            android:layout_centerHorizontal="true"
+                            android:text="0"/>
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/follower_myinfo"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:paddingTop="20dp"
+                            android:text="팔로워 수"
+                            android:textStyle="bold"
+                            android:textSize="11dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/followerNum_myinfo"
+                            android:layout_below="@+id/follower_myinfo"
+                            android:paddingTop="12dp"
+                            android:layout_centerHorizontal="true"
+                            android:text="0"/>
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:mcv_showOtherDates="all"
+            app:mcv_selectionColor="#00F"
+            android:layout_alignParentBottom="true"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

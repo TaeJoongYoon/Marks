@@ -31,6 +31,7 @@ public class MainTapPagerAdapter extends FragmentStatePagerAdapter {
         this.mapFragment = mapFragment;
         this.placeFragment = placeFragment;
         this.myInfoFragment = myInfoFragment;
+
     }
 
     @Override

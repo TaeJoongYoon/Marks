@@ -6,15 +6,50 @@
     android:layout_height="match_parent"
     tools:context="com.yoon.memoria.Reading.ReadingActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/title"
-        android:layout_centerInParent="true"/>
+        android:id="@+id/readingToolbar"
+        android:background="@color/colorPrimary"
+        >
+    </android.support.v7.widget.Toolbar>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/location"
-        android:layout_below="@+id/title"/>
+        android:id="@+id/read_username"
+        android:textStyle="bold"
+        android:layout_below="@+id/readingToolbar"
+        android:layout_margin="10dp"/>
+
+    <ImageView
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:id="@+id/read_image"
+        android:layout_below="@id/read_username"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:background="#000000"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/readLike"
+        android:layout_below="@id/read_image"
+        android:text="0"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/readText"
+        android:layout_below="@id/readLike"
+        android:layout_margin="10dp"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/read_progress"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 </RelativeLayout>

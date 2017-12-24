@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "495320323503",
+    "firebase_url": "https://memoria-186507.firebaseio.com",
+    "project_id": "memoria-186507",
+    "storage_bucket": "memoria-186507.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495320323503:android:aab09e70c640db43",
+        "android_client_info": {
+          "package_name": "com.yoon.memoria"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495320323503-23pha815ktbh9cvv8hhll8nh362lv7vo.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "495320323503-d49uher1kbm3gv62ukraed74pg2m5rmn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yoon.memoria",
+            "certificate_hash": "447579c76730eba660cda0e8219a110f848683e8"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-IJ8zOYpqg2zEJRYO1mgl7EkMuzrU65Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495320323503-23pha815ktbh9cvv8hhll8nh362lv7vo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

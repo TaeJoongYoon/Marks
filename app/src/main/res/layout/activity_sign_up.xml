@@ -16,27 +16,51 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
             <TextView
-                android:layout_width="30dp"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
-                android:text="ID" />
+                android:text="E_MAIL" />
 
             <EditText
                 android:id="@+id/request_ID"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="아이디를 입력해주세요" />
+                android:hint="이메일을 입력해주세요"
+                android:textSize="14dp"
+                android:inputType="textEmailAddress"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
             <TextView
-                android:layout_width="30dp"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:text="NICK\nNAME" />
+
+            <EditText
+                android:id="@+id/request_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="별명을 입력해주세요(최소 2글자)"
+                android:textSize="14dp"
+                android:inputType="text"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:text="PW" />
 
@@ -44,16 +68,19 @@
                 android:id="@+id/request_PW1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="비밀번호를 입력해주세요" />
+                android:textSize="14dp"
+                android:hint="비밀번호를 입력해주세요(최소 8글자)"
+                android:inputType="textPassword"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
             <TextView
-                android:layout_width="30dp"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:text="PW" />
 
@@ -61,14 +88,16 @@
                 android:id="@+id/request_PW2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="한번 더 입력해주세요" />
+                android:textSize="14dp"
+                android:hint="한번 더 입력해주세요"
+                android:inputType="textPassword"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="10dp">
+            android:layout_marginTop="10dp">
 
             <Button
                 android:id="@+id/btn_request_signup"

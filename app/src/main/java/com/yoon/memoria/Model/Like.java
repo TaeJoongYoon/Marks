@@ -5,4 +5,17 @@ package com.yoon.memoria.Model;
  */
 
 public class Like {
+    private String nickname;
+
+    public Like(String nickname){
+        this.nickname = nickname;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

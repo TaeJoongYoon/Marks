@@ -1,4 +1,4 @@
-package com.yoon.memoria.Util;
+package com.yoon.memoria.EventBus;
 
 import android.content.Intent;
 
