@@ -1,29 +1,61 @@
 package com.yoon.memoria.Model;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Yoon on 2017-12-20.
  */
 
 public class User {
 
-    private String username;
-    private String password;
+    private String uid;
     private String nickname;
+    private String password;
+    private int followingCount = 0;
+    private Map<String, Boolean> following = new HashMap<>();
+    private int followerCount = 0;
+    private Map<String, Boolean> follower = new HashMap<>();
 
     public User(){}
 
-    public User(String username, String password, String nickname){
-        this.username = username;
+    public User(String uid, String nickname, String password){
+        this.uid = uid;
         this.password = password;
         this.nickname = nickname;
     }
 
-    public String getUsername() {
-        return username;
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", uid);
+        result.put("nickname", nickname);
+        result.put("password", password);
+        result.put("followingCount", followingCount);
+        result.put("following",following);
+        result.put("followerCount",followerCount);
+        result.put("follower",follower);
+
+        return result;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getPassword() {
@@ -34,11 +66,35 @@ public class User {
         this.password = password;
     }
 
-    public String getNickname() {
-        return nickname;
+    public int getFollowingCount() {
+        return followingCount;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
+
+    public Map<String, Boolean> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(Map<String, Boolean> following) {
+        this.following = following;
+    }
+
+    public int getFollowerCount() {
+        return followerCount;
+    }
+
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public Map<String, Boolean> getFollower() {
+        return follower;
+    }
+
+    public void setFollower(Map<String, Boolean> follower) {
+        this.follower = follower;
     }
 }

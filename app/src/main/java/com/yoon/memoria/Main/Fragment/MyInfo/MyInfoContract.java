@@ -25,6 +25,5 @@ public class MyInfoContract {
         List<CalendarDay> eventMark(List<String> events);
         void eventSetting(List<String> event);
         Intent toHistory(CalendarDay date, Activity activity);
-        String getNickname(DataSnapshot dataSnapshot, FirebaseUser user);
     }
 }

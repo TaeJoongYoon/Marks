@@ -48,7 +48,7 @@
                 android:id="@+id/request_nickname"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="별명을 입력해주세요(최소 2글자)"
+                android:hint="별명을 입력해주세요(2 ~ 8글자)"
                 android:textSize="14dp"
                 android:inputType="text"/>
         </LinearLayout>

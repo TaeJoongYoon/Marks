@@ -9,12 +9,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Model.Post;
+import com.yoon.memoria.Model.User;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,20 +29,31 @@ import java.util.List;
 
 public class MapPresenter implements MapContract.Presenter {
     private MapContract.View view;
-    private List<MarkerOptions> markerOptions = new ArrayList<>(0);
 
     public MapPresenter(MapContract.View view){
         this.view = view;
     }
 
     @Override
-    public void markerSetting(GoogleMap googleMap, DataSnapshot dataSnapshot) {
+    public void markerAdd(GoogleMap googleMap, DataSnapshot dataSnapshot, List<Marker> markers) {
         Post post = dataSnapshot.getValue(Post.class);
 
         LatLng latLng = new LatLng(post.getLatitude(),post.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        googleMap.addMarker(markerOptions);
+        markerOptions.title(post.getUid());
+        Marker marker = googleMap.addMarker(markerOptions);
+        markers.add(marker);
+    }
+
+    @Override
+    public void markerRemove(GoogleMap googleMap, DataSnapshot dataSnapshot, List<Marker> markers) {
+        Post post = dataSnapshot.getValue(Post.class);
+
+        for (Marker marker : markers){
+            if(marker.getTitle().equals(post.getUid()))
+                marker.remove();
+        }
     }
 
     @Override
@@ -55,7 +72,7 @@ public class MapPresenter implements MapContract.Presenter {
     }
 
     @Override
-    public void setCurrentLocation(GoogleMap googleMap, LatLng DEFAULT_LOCATION, Location location, String markerTitle, String markerSnippet) {
+    public void setCurrentLocation(GoogleMap googleMap, LatLng DEFAULT_LOCATION, Location location) {
         if (location != null) {
             //현재위치의 위도 경도 가져옴
             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -68,4 +85,5 @@ public class MapPresenter implements MapContract.Presenter {
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
+
 }

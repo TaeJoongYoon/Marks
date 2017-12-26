@@ -2,9 +2,6 @@ package com.yoon.memoria.Posting;
 
 import android.app.ProgressDialog;
 import android.net.Uri;
-
-import com.yoon.memoria.Model.Like;
-
 import java.util.List;
 
 /**
@@ -20,7 +17,7 @@ public class PostingContract {
     }
 
     interface Presenter{
-        void post_to_firebase(String img, String content, Double latitude, Double longitude, String username, String date, List<Like> likes);
+        void post_to_firebase(String uid, String nickname, String date, double latitude, double longitude, String filename, String content);
         void fileUpload(Uri uri, ProgressDialog progressDialog);
     }
 }

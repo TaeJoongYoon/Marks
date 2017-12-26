@@ -1,6 +1,10 @@
 package com.yoon.memoria.Model;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Yoon on 2017-12-20.
@@ -8,40 +12,66 @@ import java.util.List;
 
 public class Post {
 
-    private String filename;
-    private String content;
+    private String uid;
+    private String nickname;
+    private String date;
     private double latitude;
     private double longitude;
-    private String username;
-    private String date;
-    private List<Like> likes;
+    private String filename;
+    private String content;
+    private int likeCount = 0;
+    private Map<String ,Boolean> likes = new HashMap<String, Boolean>();
 
     public Post() {}
 
-    public Post(String filename, String content, double latitude, double longitude, String username, String date, List<Like> likes){
-        this.filename = filename;
-        this.content = content;
+    public Post(String uid, String nickname, String date, double latitude, double longitude, String filename, String content){
+        this.uid = uid;
+        this.nickname = nickname;
+        this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.username = username;
-        this.date = date;
-        this.likes = likes;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
+        this.filename  = filename;
         this.content = content;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid",uid);
+        result.put("nickname",nickname);
+        result.put("date",date);
+        result.put("latitude",latitude);
+        result.put("longitude",longitude);
+        result.put("filename",filename);
+        result.put("content",content);
+        result.put("likeCount",likeCount);
+        result.put("likes",likes);
+
+        return result;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public double getLatitude() {
@@ -60,27 +90,35 @@ public class Post {
         this.longitude = longitude;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setUsername(String nickname) {
-        this.username = nickname;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
-    public String getDate() {
-        return date;
+    public String getContent() {
+        return content;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public List<Like> getLikes() {
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public Map<String, Boolean> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<Like> likes) {
+    public void setLikes(Map<String, Boolean> likes) {
         this.likes = likes;
     }
 }

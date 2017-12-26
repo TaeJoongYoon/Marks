@@ -3,6 +3,7 @@ package com.yoon.memoria.SignIn;
 import android.app.Activity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 
 /**
  * Created by Yoon on 2017-11-10.
@@ -16,6 +17,6 @@ public class SignInContract {
     }
 
     interface Presenter{
-        void call_sign_in(Activity activity, FirebaseAuth auth, String username, String password);
+        void call_sign_in(Activity activity, FirebaseAuth auth, String username, String password, DatabaseReference databaseReference);
     }
 }

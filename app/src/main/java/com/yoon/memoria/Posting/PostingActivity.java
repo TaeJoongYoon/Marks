@@ -25,7 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
-import com.yoon.memoria.Model.Like;
+import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
 
@@ -52,16 +52,16 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     private Intent intent;
     private CalendarDay day;
 
+    private String uid;
+    private String nickname;
     private String filename;
     private String content;
     private double latitude;
     private double longitude;
-    private String username;
     private String date;
-    private List<Like> likes = new ArrayList<>(0);
 
     private Uri uri;
-    private String filePath;
+    private String filePath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,8 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         });
         intent = getIntent();
 
-        username = user.getEmail();
+        uid = getUid();
+        nickname = "태중이";
         latitude = intent.getDoubleExtra("latitude",0);
         longitude = intent.getDoubleExtra("longitude",0);
         day = CalendarDay.today();
@@ -151,7 +152,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         filename = presenter.getFilename();
         content = editText.getText().toString();
         progressDialog.dismiss();
-        presenter.post_to_firebase(filename, content, latitude, longitude, username, date, likes);
+        presenter.post_to_firebase(uid,nickname,date,latitude,longitude,filename,content);
     }
 
     @Override
@@ -165,8 +166,8 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
             uri = data.getData();
             filePath = getRealPathFromURIPath(uri, PostingActivity.this);
             File file = new File(filePath);
-            if(file.length()>30*2E20){
-                Util.makeToast(this,"이미지 크기는 최대 30MB 입니다");
+            if(file.length()>5*2E20){
+                Util.makeToast(this,"이미지 크기는 최대 5MB 입니다");
             }else {
                 Glide.with(this)
                         .load(file)
@@ -193,4 +194,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         }
     }
 
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
 }

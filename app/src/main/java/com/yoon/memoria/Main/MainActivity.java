@@ -11,6 +11,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.EventBus.BusProvider;
 import com.yoon.memoria.Main.Fragment.Map.MapContract;
@@ -19,6 +26,8 @@ import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoContract;
 import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoFragment;
 import com.yoon.memoria.Main.Fragment.Place.PlaceContract;
 import com.yoon.memoria.Main.Fragment.Place.PlaceFragment;
+import com.yoon.memoria.Model.User;
+import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.R;
 
 import butterknife.BindView;
@@ -26,11 +35,12 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity{
-    @BindView(R.id.mainTabLayout)
-    TabLayout tabLayout;
+    private DatabaseReference databaseReference;
+    private FirebaseStorage storage;
+    private MySingleton mySingleton = MySingleton.getInstance();
 
-    @BindView(R.id.mainPager)
-    ViewPager viewPager;
+    @BindView(R.id.mainTabLayout) TabLayout tabLayout;
+    @BindView(R.id.mainPager) ViewPager viewPager;
 
     private MainTapPagerAdapter mainTapPagerAdapter;
 
@@ -48,6 +58,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        init();
         initFragment();
         initTabLayout();
         initViewPager();
@@ -105,5 +116,10 @@ public class MainActivity extends AppCompatActivity{
         BusProvider.getInstance().post(new ActivityResultEvent(requestCode, resultCode, data));
     }
 
+    public void init(){
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
+        mySingleton.setStorage(storage);
+    }
 }
 

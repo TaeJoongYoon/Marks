@@ -34,6 +34,7 @@ import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SundayDecorator;
 import com.yoon.memoria.Main.MainActivity;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.Posting.PostingActivity;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Reading.ReadingActivity;
@@ -57,9 +58,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDateSelectedListener{
-    private DatabaseReference databaseReference;
+    private MySingleton mySingleton = MySingleton.getInstance();
     private MyInfoPresenter presenter;
-    private FirebaseUser user;
 
     @BindView(R.id.calendarView) MaterialCalendarView materialCalendarView;
     @BindView(R.id.myinfoToolbar) Toolbar toolbar;
@@ -91,6 +91,7 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         View v = inflater.inflate(R.layout.fragment_myinfo, container, false);
         ButterKnife.bind(this,v);
         initToolbar();
+        init();
         calendarinit();
 
         return v;
@@ -110,11 +111,6 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         materialCalendarView.addDecorator(new EventDecorator(Color.GREEN, calendarDays,getActivity()));
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        userinit();
-    }
     public void initToolbar() {
         toolbar.inflateMenu(R.menu.menu_myinfo);
 
@@ -131,40 +127,9 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         });
     }
 
-    public void userinit(){
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("user").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                nickname = presenter.getNickname(dataSnapshot, user);
-                if(nickname.length() > 0) {
-                    nickname_view.setText(nickname);
-                    return;
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+    public void init(){
+        nickname = "태중이";
+        nickname_view.setText(nickname);
     }
     public void calendarinit(){
         materialCalendarView.setOnDateChangedListener(this);

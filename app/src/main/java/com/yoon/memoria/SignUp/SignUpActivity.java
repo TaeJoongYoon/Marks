@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
 
@@ -123,8 +124,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
         if(username.length() <= 0)
             Util.makeToast(this,"이메일을 입력해주세요!");
-        else if(nickname.length() < 2)
-            Util.makeToast(this, "별명을 2글자 이상 입력해주세요!");
+        else if(nickname.length() < 2 || nickname.length() > 8)
+            Util.makeToast(this, "별명을 2글자 이상, 8글자 이하로 입력해주세요!");
         else if(nicks.contains(nickname))
             Util.makeToast(this, "중복되는 별명입니다!");
         else if(password1.length() == 0 || password2.length() == 0)

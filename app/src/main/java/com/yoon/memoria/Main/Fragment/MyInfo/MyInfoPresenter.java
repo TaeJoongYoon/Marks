@@ -46,16 +46,6 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
     }
 
     @Override
-    public String getNickname(DataSnapshot dataSnapshot, FirebaseUser user) {
-        User userValue = dataSnapshot.getValue(User.class);
-
-        if(userValue.getUsername().equals(user.getEmail()))
-            return userValue.getNickname();
-        else
-            return "";
-    }
-
-    @Override
     public List<CalendarDay> eventMark(List<String> events) {
         Calendar calendar = Calendar.getInstance();
         for(String event : events){

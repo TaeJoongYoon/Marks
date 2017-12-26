@@ -59,6 +59,8 @@ import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.BusProvider;
 import com.yoon.memoria.Model.Post;
+import com.yoon.memoria.Model.User;
+import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.Posting.PostingActivity;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Reading.ReadingActivity;
@@ -77,6 +79,7 @@ import static android.content.ContentValues.TAG;
 public class MapFragment extends Fragment implements MapContract.View, OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
+    private MySingleton mySingleton = MySingleton.getInstance();
     private DatabaseReference databaseReference;
     private MapPresenter presenter;
 
@@ -94,7 +97,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private GoogleApiClient googleApiClient = null;
     private Marker currentMarker = null;
     private Location postLocation = null;
-    private List<MarkerOptions> markerOptions = new ArrayList<>(0);
+    private List<Marker> markers = new ArrayList<>(0);
 
     private final static int MAXENTRIES = 5;
     private String[] LikelyPlaceNames = null;
@@ -151,15 +154,17 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         databaseReference.child("post").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                presenter.markerSetting(googleMap,dataSnapshot);
+                presenter.markerAdd(googleMap,dataSnapshot,markers);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+                presenter.markerRemove(googleMap,dataSnapshot,markers);
             }
 
             @Override
@@ -171,6 +176,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             public void onCancelled(DatabaseError databaseError) {
 
             }
+
         });
     }
 
@@ -230,7 +236,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             }
         }
     }
-
 
     public void initToolbar() {
         toolbar.inflateMenu(R.menu.menu_map);
@@ -321,8 +326,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         this.googleMap = googleMap;
 
 
-        presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,
-                null, "위치정보 가져올 수 없음", "위치 퍼미션과 GPS 활성 여부 확인");
+        presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION, null);
 
         TedRx2Permission.with(getActivity())
                 .setRationaleTitle(R.string.rationale_title)
@@ -426,14 +430,14 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         location.setLongitude((DEFAULT_LOCATION.longitude));
 
         postLocation = location;
-        presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location,"위치정보 가져올 수 없음",
-                "위치 퍼미션과 GPS활성 여부 확인");
+        presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
         Util.makeToast(getActivity(), "서비스와 연결이 끊겼습니다.");
     }
 
     @Override
     public void onLocationChanged(Location location) {
-
+        postLocation = location;
+        presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
         Log.i(TAG, "onLocationChanged call..");
         searchCurrentPlaces();
     }
@@ -465,13 +469,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 }
 
                 placeLikelihoods.release();
-
-                Location location = new Location("");
-                location.setLatitude(LikelyLatLngs[0].latitude);
-                location.setLongitude(LikelyLatLngs[0].longitude);
-
-                postLocation = location;
-                presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location,LikelyPlaceNames[0], LikelyAddresses[0]);
+                //presenter.setCurrentPlace(databaseReference, LikelyPlaceNames[0]);
             }
         });
 

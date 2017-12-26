@@ -31,12 +31,17 @@
         android:layout_margin="10dp"
         android:background="#000000"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/read_like"
+        android:layout_below="@+id/read_image"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/readLike"
+        android:layout_toRightOf="@+id/read_like"
         android:layout_below="@id/read_image"
-        android:text="0"
         android:layout_margin="10dp"/>
 
     <TextView

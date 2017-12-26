@@ -13,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.yoon.memoria.Main.MainActivity;
 import com.yoon.memoria.R;
 import com.yoon.memoria.SignUp.SignUpActivity;
@@ -23,6 +25,7 @@ import butterknife.ButterKnife;
 
 public class SignInActivity extends AppCompatActivity implements SignInContract.View {
     private FirebaseAuth auth;
+    private DatabaseReference databaseReference;
     private SignInPresenter presenter;
 
     @BindView(R.id.ID) EditText input_ID;
@@ -43,7 +46,9 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
         ButterKnife.bind(this);
         presenter = new SignInPresenter(this);
         auth = FirebaseAuth.getInstance();
-
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        System.out.println("CCCC");
+        System.out.println(databaseReference);
         init();
     }
 
@@ -73,7 +78,7 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
                 input_PW.setText(password);
                 progressBar.setVisibility(View.VISIBLE);
 
-                presenter.call_sign_in(this,auth,username,password);
+                presenter.call_sign_in(this,auth,username,password,databaseReference);
             }
             else
                 return;
@@ -103,7 +108,7 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
         else if(password.length() < 8)
             Util.makeToast(this,"8글자 이상 입력해주세요!");
         else {
-            presenter.call_sign_in(this, auth, username, password);
+            presenter.call_sign_in(this, auth, username, password,databaseReference);
             progressBar.setVisibility(View.VISIBLE);
         }
     }
