@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class User {
 
-    private String uid;
     private String nickname;
     private String password;
     private int followingCount = 0;
@@ -22,8 +21,7 @@ public class User {
 
     public User(){}
 
-    public User(String uid, String nickname, String password){
-        this.uid = uid;
+    public User(String nickname, String password){
         this.password = password;
         this.nickname = nickname;
     }
@@ -31,7 +29,6 @@ public class User {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("uid", uid);
         result.put("nickname", nickname);
         result.put("password", password);
         result.put("followingCount", followingCount);
@@ -40,14 +37,6 @@ public class User {
         result.put("follower",follower);
 
         return result;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public String getNickname() {

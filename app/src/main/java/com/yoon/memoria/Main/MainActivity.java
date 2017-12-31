@@ -1,22 +1,11 @@
 package com.yoon.memoria.Main;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.EventBus.BusProvider;
@@ -26,8 +15,7 @@ import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoContract;
 import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoFragment;
 import com.yoon.memoria.Main.Fragment.Place.PlaceContract;
 import com.yoon.memoria.Main.Fragment.Place.PlaceFragment;
-import com.yoon.memoria.Model.User;
-import com.yoon.memoria.MySingleton;
+import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 
 import butterknife.BindView;
@@ -35,9 +23,8 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity{
-    private DatabaseReference databaseReference;
     private FirebaseStorage storage;
-    private MySingleton mySingleton = MySingleton.getInstance();
+    private StorageSingleton storageSingleton = StorageSingleton.getInstance();
 
     @BindView(R.id.mainTabLayout) TabLayout tabLayout;
     @BindView(R.id.mainPager) ViewPager viewPager;
@@ -117,9 +104,8 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void init(){
-        databaseReference = FirebaseDatabase.getInstance().getReference();
         storage = FirebaseStorage.getInstance();
-        mySingleton.setStorage(storage);
+        storageSingleton.setStorage(storage);
     }
 }
 

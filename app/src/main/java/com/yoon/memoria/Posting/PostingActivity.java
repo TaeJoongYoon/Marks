@@ -5,16 +5,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -25,13 +20,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
-import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -171,16 +163,11 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
             }else {
                 Glide.with(this)
                         .load(file)
-                        .override(dpToPixel(260),dpToPixel(260))
+                        .override(Util.dpToPixel(this,260),Util.dpToPixel(this,260))
                         .fitCenter()
                         .into(imageView);
             }
         }
-    }
-
-    public int dpToPixel(int dp){
-        int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getApplicationContext().getResources().getDisplayMetrics());
-        return  px;
     }
 
     private String getRealPathFromURIPath(Uri contentURI, Activity activity) {

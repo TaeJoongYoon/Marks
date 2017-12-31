@@ -10,11 +10,11 @@ import com.google.firebase.database.DatabaseReference;
 public class SplashContract {
 
     interface View{
-        void toSignin();
+        void toSignIn();
         void toMain();
     }
 
     interface Presenter{
-        void check_signed(FirebaseUser user, DatabaseReference databaseReference);
+        void check_signed(FirebaseUser user);
     }
 }

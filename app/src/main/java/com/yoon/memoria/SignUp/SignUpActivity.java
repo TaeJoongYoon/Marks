@@ -2,12 +2,12 @@ package com.yoon.memoria.SignUp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -16,15 +16,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.yoon.memoria.Model.User;
-import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
+import com.yoon.memoria.databinding.ActivitySignUpBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 
 public class SignUpActivity extends AppCompatActivity implements SignUpContract.View {
@@ -32,13 +30,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
     private FirebaseAuth auth;
     private SignUpPresenter presenter;
     private DatabaseReference databaseReference;
-
-    @BindView(R.id.request_ID) EditText input_ID;
-    @BindView(R.id.request_nickname) EditText input_nickname;
-    @BindView(R.id.request_PW1) EditText input_PW1;
-    @BindView(R.id.request_PW2) EditText input_PW2;
-
-    @BindView(R.id.btn_request_signup) Button btn_signup;
+    private ActivitySignUpBinding binding;
 
     private String username;
     private String nickname;
@@ -50,8 +42,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
-        ButterKnife.bind(this);
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_sign_up);
+        binding.setActivity(this);
         presenter = new SignUpPresenter(this);
         auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -61,12 +53,11 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
     public void init(){
 
-        databaseReference.child("user").addChildEventListener(new ChildEventListener() {
+        databaseReference.child("users").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 User user = dataSnapshot.getValue(User.class);
                 String nick = user.getNickname();
-                System.out.println(nick);
                 nicks.add(nick);
             }
 
@@ -90,13 +81,13 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
             }
         });
-        input_PW2.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        input_PW2.setOnEditorActionListener((textView, i, keyEvent) -> {
+        binding.signupEtPW2.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        binding.signupEtPW2.setOnEditorActionListener((textView, i, keyEvent) -> {
             if(i == EditorInfo.IME_ACTION_DONE)
                 call_Sign_up();
             return true;
         });
-        btn_signup.setOnClickListener(view -> {
+        binding.signupBtn.setOnClickListener(view -> {
             call_Sign_up();
         });
     }
@@ -117,10 +108,10 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
     }
 
     public void call_Sign_up(){
-        username = input_ID.getText().toString();
-        nickname = input_nickname.getText().toString();
-        password1 = input_PW1.getText().toString();
-        password2 = input_PW2.getText().toString();
+        username = binding.signupEtID.getText().toString();
+        nickname = binding.signupEtNAME.getText().toString();
+        password1 = binding.signupEtPW.getText().toString();
+        password2 = binding.signupEtPW2.getText().toString();
 
         if(username.length() <= 0)
             Util.makeToast(this,"이메일을 입력해주세요!");

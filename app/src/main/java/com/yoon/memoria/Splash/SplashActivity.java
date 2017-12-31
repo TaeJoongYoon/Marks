@@ -13,31 +13,24 @@ import com.yoon.memoria.SignIn.SignInActivity;
 
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
-    private FirebaseAuth auth;
-    private DatabaseReference databaseReference;
+    private FirebaseUser user;
     private SplashPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new SplashPresenter(this);
-        auth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        System.out.println("BBBB");
-        System.out.println(databaseReference);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser user = auth.getCurrentUser();
-        System.out.println("BBBB");
-        System.out.println(databaseReference);
-        presenter.check_signed(user, databaseReference);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        presenter.check_signed(user);
     }
 
     @Override
-    public void toSignin() {
+    public void toSignIn() {
         startActivity(new Intent(SplashActivity.this, SignInActivity.class));
         finish();
     }

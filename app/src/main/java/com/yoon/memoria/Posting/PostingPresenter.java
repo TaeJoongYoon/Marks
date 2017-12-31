@@ -14,13 +14,11 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.yoon.memoria.Model.Post;
-import com.yoon.memoria.MySingleton;
-import com.yoon.memoria.Util.Util;
+import com.yoon.memoria.StorageSingleton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,7 +40,7 @@ public class PostingPresenter implements PostingContract.Presenter {
 
     @Override
     public void post_to_firebase(String uid, String nickname, String date, double latitude, double longitude, String filename, String content) {
-        MySingleton mySingleton = MySingleton.getInstance();
+        StorageSingleton storageSingleton = StorageSingleton.getInstance();
 
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 

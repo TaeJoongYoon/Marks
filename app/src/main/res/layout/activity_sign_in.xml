@@ -1,78 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.yoon.memoria.SignIn.SignInActivity">
-
-    <LinearLayout
-        android:layout_width="280dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:text="E-MAIL"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="이메일을 입력해주세요"
-                android:textSize="14dp"
-                android:id="@+id/ID"
-                android:inputType="textEmailAddress"
-                />
-        </LinearLayout>
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="activity"
+            type="com.yoon.memoria.SignIn.SignInActivity"/>
+    </data>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:text="PW" />
-
-            <EditText
-                android:id="@+id/PW"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            >
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="비밀번호를 입력해주세요(최소 8글자)"
-                android:textSize="14dp"
-                android:inputType="textPassword" />
-        </LinearLayout>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="로그인"
-            android:id="@+id/btn_signin"/>
-        <TextView
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:text="E-MAIL"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="이메일을 입력해주세요"
+                    android:textSize="14dp"
+                    android:id="@+id/signin_et_ID"
+                    android:inputType="textEmailAddress"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:text="PW" />
+
+                <EditText
+                    android:id="@+id/signin_et_PW"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="비밀번호를 입력해주세요(최소 8글자)"
+                    android:textSize="14dp"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="로그인"
+                android:id="@+id/signin_btn"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/signin_tv_signup"
+                android:layout_marginTop="14dp"
+                android:text="@string/request_sign_up"
+                android:textColor="#85000000"/>
+            </LinearLayout>
+        <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/txt_signup"
-            android:layout_marginTop="14dp"
-            android:text="@string/request_sign_up"
-            android:textColor="#85000000"/>
-        </LinearLayout>
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sign_in_progress"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        />
-</RelativeLayout>
+            android:id="@+id/signin_progress_bar"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+</layout>

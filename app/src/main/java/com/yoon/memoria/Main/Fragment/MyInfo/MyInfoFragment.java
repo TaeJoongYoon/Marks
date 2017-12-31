@@ -2,63 +2,40 @@ package com.yoon.memoria.Main.Fragment.MyInfo;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
-import com.yoon.memoria.History.HistoryActivity;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.EventDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.OneDayDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SaturdayDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SundayDecorator;
-import com.yoon.memoria.Main.MainActivity;
-import com.yoon.memoria.Model.Post;
-import com.yoon.memoria.Model.User;
-import com.yoon.memoria.MySingleton;
-import com.yoon.memoria.Posting.PostingActivity;
+import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
-import com.yoon.memoria.Reading.ReadingActivity;
 import com.yoon.memoria.SignIn.SignInActivity;
 import com.yoon.memoria.Util.Util;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDateSelectedListener{
-    private MySingleton mySingleton = MySingleton.getInstance();
+    private StorageSingleton storageSingleton = StorageSingleton.getInstance();
     private MyInfoPresenter presenter;
 
     @BindView(R.id.calendarView) MaterialCalendarView materialCalendarView;

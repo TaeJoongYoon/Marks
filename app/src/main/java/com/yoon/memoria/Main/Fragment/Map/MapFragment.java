@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -41,9 +40,8 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -52,15 +50,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
 import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.BusProvider;
-import com.yoon.memoria.Model.Post;
-import com.yoon.memoria.Model.User;
-import com.yoon.memoria.MySingleton;
 import com.yoon.memoria.Posting.PostingActivity;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Reading.ReadingActivity;
@@ -79,7 +71,6 @@ import static android.content.ContentValues.TAG;
 public class MapFragment extends Fragment implements MapContract.View, OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
-    private MySingleton mySingleton = MySingleton.getInstance();
     private DatabaseReference databaseReference;
     private MapPresenter presenter;
 
@@ -89,7 +80,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 60 * 20;
 
     private PlaceAutocompleteFragment autocompleteFragment;
-
     @BindView(R.id.map) MapView mapView = null;
     @BindView(R.id.mapToolbar) Toolbar toolbar;
 
@@ -105,6 +95,12 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private String[] LikelyAttributions = null;
     private LatLng[] LikelyLatLngs = null;
 
+    private CameraPosition mCameraPosition;
+    private Location mLastKnownLocation;
+
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
+
     public MapFragment() {
         presenter = new MapPresenter(this);
     }
@@ -112,6 +108,11 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
+
         buildGoogleApiClient();
         BusProvider.getInstance().register(this);
 
@@ -126,7 +127,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         setHasOptionsMenu(true);
         ButterKnife.bind(this,v);
 
-        initMap(v);
         initGoogleSearch();
 
         return v;
@@ -147,9 +147,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onStart() {
         super.onStart();
         mapView.onStart();
-        if ( googleApiClient != null && !(googleApiClient.isConnected())) {
-            googleApiClient.connect();
-        }
 
         databaseReference.child("post").addChildEventListener(new ChildEventListener() {
             @Override
@@ -190,9 +187,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onPause() {
         super.onPause();
         mapView.onPause();
-        if ( googleApiClient != null && googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        }
     }
 
     @Override
@@ -203,17 +197,17 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     @Override
     public void onDestroyView() {
-        if ( googleApiClient != null && googleApiClient.isConnected()) {
-            googleApiClient.disconnect();
-        }
         BusProvider.getInstance().unregister(this);
         super.onDestroyView();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        if (googleMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, googleMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
+            super.onSaveInstanceState(outState);
+        }
     }
 
     @Override
@@ -277,10 +271,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         }
     }
 
-    public void initMap(View v) {
-        mapView.getMapAsync(this);
-    }
-
     public void initGoogleSearch(){
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -327,7 +317,14 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
 
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION, null);
+        updateLocaionUI();
 
+        getDeviceLocation();
+    }
+
+
+    @SuppressLint("MissingPermission")
+    public void updateLocaionUI(){
         TedRx2Permission.with(getActivity())
                 .setRationaleTitle(R.string.rationale_title)
                 .setRationaleMessage(R.string.rationale_location_message)
@@ -341,17 +338,31 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                         Util.makeToast(getActivity(), "권한 승인");
                     } else {
                         Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
-                }
+                    }
                 }, throwable -> {
                 }, () -> {
                 });
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getDeviceLocation(){
+        mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        if (mCameraPosition != null) {
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+        } else if (mLastKnownLocation != null) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mLastKnownLocation.getLatitude(),
+                            mLastKnownLocation.getLongitude()), 15));
+        } else {
+            Log.d(TAG, "Current location is null. Using defaults.");
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15));
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
         googleMap.setOnMarkerClickListener(marker -> {
             toReading(marker);
             return true;
         });
     }
-
     private void buildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
@@ -361,6 +372,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(getActivity(), this)
                 .build();
+        googleApiClient.connect();
     }
 
     public boolean checkLocationServicesStatus() {
@@ -394,6 +406,10 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             });
             builder.create().show();
         }
+
+
+        mapView.getMapAsync(this);
+        ///
 
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

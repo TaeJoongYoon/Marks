@@ -2,10 +2,8 @@ package com.yoon.memoria.Reading;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +13,9 @@ import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,18 +23,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.yoon.memoria.Model.Post;
-import com.yoon.memoria.Model.User;
-import com.yoon.memoria.MySingleton;
+import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReadingActivity extends AppCompatActivity implements ReadingContract.View{
-    private MySingleton mySingleton = MySingleton.getInstance();
+    private StorageSingleton storageSingleton = StorageSingleton.getInstance();
     private DatabaseReference databaseReference;
     private FirebaseUser user;
     private StorageReference storageReference;
@@ -99,7 +93,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
     public void initDB(){
         user = FirebaseAuth.getInstance().getCurrentUser();
-        storageReference = mySingleton.getStorageReference();
+        storageReference = storageSingleton.getStorageReference();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("post");
         Util.makeToast(this, ""+databaseReference);
     }

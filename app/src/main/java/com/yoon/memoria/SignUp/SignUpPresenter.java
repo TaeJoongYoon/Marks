@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.yoon.memoria.Model.User;
-import com.yoon.memoria.MySingleton;
+import com.yoon.memoria.StorageSingleton;
 
 /**
  * Created by Yoon on 2017-11-10.
@@ -37,12 +37,10 @@ public class SignUpPresenter implements SignUpContract.Presenter {
                         if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
 
-                            MySingleton mySingleton = MySingleton.getInstance();
-
-                            userModel = new User(user.getUid(),password,nickname);
+                            userModel = new User(password,nickname);
 
                             databaseReference = FirebaseDatabase.getInstance().getReference();
-                            databaseReference.child("user").push().setValue(userModel);
+                            databaseReference.child("user").child(user.getUid()).setValue(userModel);
 
                             if(user != null)
                                 view.finishActivity();

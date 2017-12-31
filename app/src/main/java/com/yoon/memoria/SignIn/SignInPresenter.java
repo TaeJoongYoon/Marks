@@ -9,8 +9,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.yoon.memoria.MySingleton;
 
 /**
  * Created by Yoon on 2017-11-10.
@@ -24,7 +22,7 @@ public class SignInPresenter implements SignInContract.Presenter {
     }
 
     @Override
-    public void call_sign_in(Activity activity, FirebaseAuth auth, String username, String password, DatabaseReference databaseReference) {
+    public void call_sign_in(Activity activity, FirebaseAuth auth, String username, String password) {
         auth.signInWithEmailAndPassword(username, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override

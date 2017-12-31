@@ -17,6 +17,6 @@ public class SignInContract {
     }
 
     interface Presenter{
-        void call_sign_in(Activity activity, FirebaseAuth auth, String username, String password, DatabaseReference databaseReference);
+        void call_sign_in(Activity activity, FirebaseAuth auth, String username, String password);
     }
 }

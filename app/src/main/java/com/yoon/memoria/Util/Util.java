@@ -4,8 +4,6 @@ import android.content.Context;
 import android.util.TypedValue;
 import android.widget.Toast;
 
-import com.yoon.memoria.MyApplication;
-
 /**
  * Created by Yoon on 2017-11-12.
  */
@@ -16,7 +14,8 @@ public class Util {
         Toast.makeText(context,text, Toast.LENGTH_SHORT).show();
     }
 
-    public static int dp_to_px(float dp){
-        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dp, MyApplication.getAppContext().getResources().getDisplayMetrics());
+    public static int dpToPixel(Context context, int dp){
+        int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+        return  px;
     }
 }
