@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context="com.yoon.memoria.Posting.PostingActivity">
+    <data>
+        <variable
+            name="activity"
+            type="com.yoon.memoria.Posting.PostingActivity">
 
-    <android.support.v7.widget.Toolbar
+        </variable>
+    </data>
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/postingToolbar"
-        android:background="@color/colorPrimary"
-        >
-    </android.support.v7.widget.Toolbar>
-    <ImageView
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        android:id="@+id/post_image"
-        android:layout_margin="10dp"
-        android:layout_below="@id/postingToolbar"
-        android:layout_centerHorizontal="true"
-        android:background="#000000"/>
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/postEdit"
-        android:layout_below="@id/post_image"
-        android:layout_margin="10dp"
-        android:hint="글을 입력해주세요"
-        android:background="@null"/>
-</RelativeLayout>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/postingToolbar"
+            android:background="@color/colorPrimary"
+            >
+        </android.support.v7.widget.Toolbar>
+        <ImageView
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:id="@+id/post_image"
+            android:layout_margin="10dp"
+            android:layout_below="@id/postingToolbar"
+            android:layout_centerHorizontal="true"
+            android:background="#000000"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/postEdit"
+            android:layout_below="@id/post_image"
+            android:layout_margin="10dp"
+            android:hint="글을 입력해주세요"
+            android:background="@null"/>
+    </RelativeLayout>
+</layout>

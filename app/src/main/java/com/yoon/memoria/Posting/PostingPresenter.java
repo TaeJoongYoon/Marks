@@ -39,18 +39,16 @@ public class PostingPresenter implements PostingContract.Presenter {
 
 
     @Override
-    public void post_to_firebase(String uid, String nickname, String date, double latitude, double longitude, String filename, String content) {
-        StorageSingleton storageSingleton = StorageSingleton.getInstance();
-
+    public void post_to_firebase(String uid, String date, double latitude, double longitude, String filename, String content) {
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
-        String KEY = firebaseDatabase.child("post").push().getKey();
-        post = new Post(uid,nickname,date,latitude,longitude,filename,content);
+        String KEY = firebaseDatabase.child("posts").push().getKey();
+        post = new Post(uid,date,latitude,longitude,filename,content);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/post/" + KEY, postValues);
-        childUpdates.put("/user/" + getUid() + "/" + KEY, postValues);
+        childUpdates.put("/posts/" + KEY, postValues);
+        childUpdates.put("/users/" + getUid() + "/" + "/posts/" + KEY, postValues);
 
         firebaseDatabase.updateChildren(childUpdates);
         view.post_OK();
@@ -59,7 +57,7 @@ public class PostingPresenter implements PostingContract.Presenter {
     @Override
     public void fileUpload(Uri filePath, ProgressDialog progressDialog) {
         firebaseStorage = FirebaseStorage.getInstance();
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMHH_mmss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SS");
 
         Date now = new Date();
         filename = format.format(now) + ".png";

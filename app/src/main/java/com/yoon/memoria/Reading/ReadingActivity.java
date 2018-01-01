@@ -1,16 +1,12 @@
 package com.yoon.memoria.Reading;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.support.v7.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,25 +24,15 @@ import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import com.yoon.memoria.databinding.ActivityReadingBinding;
+
 
 public class ReadingActivity extends AppCompatActivity implements ReadingContract.View{
+    private ActivityReadingBinding binding;
     private StorageSingleton storageSingleton = StorageSingleton.getInstance();
     private DatabaseReference databaseReference;
-    private FirebaseUser user;
-    private StorageReference storageReference;
     private ReadingPresenter presenter;
     private DataSnapshot currentData;
-
-    @BindView(R.id.readingToolbar) Toolbar toolbar;
-    @BindView(R.id.read_username) TextView username;
-    @BindView(R.id.read_image) ImageView imageView;
-    @BindView(R.id.readLike) TextView like;
-    @BindView(R.id.readText) TextView content;
-    @BindView(R.id.read_progress) ProgressBar progressBar;
-
-    @BindView(R.id.read_like) Button button;
 
     private Post post;
     private Intent intent;
@@ -56,27 +42,25 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reading);
-        ButterKnife.bind(this);
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_reading);
+        binding.setActivity(this);
         presenter = new ReadingPresenter(this);
 
         initDB();
         initToolbar();
         init();
 
-        progressBar.setVisibility(View.VISIBLE);
+        binding.readProgress.setVisibility(View.VISIBLE);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("11");
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    System.out.println("22");
                     if(presenter.inputData(snapshot,latitude,longitude)){
                         currentData = snapshot;
                         foundData();
-                        button.setOnClickListener(view -> {
+                        binding.readBtnLike.setOnClickListener(view -> {
                             System.out.println(currentData.getKey());
-                            onStarClicked(databaseReference.child("post").child(currentData.getKey()));
+                            onStarClicked(databaseReference.child("posts").child(currentData.getKey()));
                         });
                         break;
                     }
@@ -92,14 +76,11 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
 
     public void initDB(){
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        storageReference = storageSingleton.getStorageReference();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("post");
-        Util.makeToast(this, ""+databaseReference);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     public void initToolbar(){
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.readingToolbar);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(null);
@@ -113,33 +94,35 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
     public void foundData(){
         post = currentData.getValue(Post.class);
-        String filename = post.getFilename();
-        storageReference.child(filename).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        databaseReference.child("users").child(post.getUid()).child("nickname").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onSuccess(Uri uri) {
-                UIsetting(uri);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String username = dataSnapshot.getValue(String.class);
+                binding.readTvUsername.setText(username);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+        String filename = post.getFilename();
+        storageSingleton.getStorageReference().child(filename).getDownloadUrl().addOnSuccessListener(
+                uri -> UIsetting(uri)
+        );
     }
 
     public void UIsetting(Uri uri){
-        username.setText(post.getNickname());
-
         Glide.with(this)
                 .load(uri)
-                .override(dpToPixel(260), dpToPixel(260))
+                .override(Util.dpToPixel(this,260), Util.dpToPixel(this,260))
                 .fitCenter()
-                .into(imageView);
+                .into(binding.readImage);
 
-        like.setText(""+post.getLikeCount());
+        binding.readTvLike.setText(""+post.getLikeCount());
 
-        content.setText(post.getContent());
-        progressBar.setVisibility(View.GONE);
-    }
-
-    public int dpToPixel(int dp){
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getApplicationContext().getResources().getDisplayMetrics());
-        return  px;
+        binding.readTvContent.setText(post.getContent());
+        binding.readProgress.setVisibility(View.GONE);
     }
 
     private void onStarClicked(DatabaseReference postRef) {
@@ -153,12 +136,12 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                     return Transaction.success(mutableData);
                 }
 
-                if (post.getLikes().containsKey(user.getUid())) {
+                if (post.getLikes().containsKey(getUid())) {
                     post.setLikeCount(post.getLikeCount()-1);
-                    post.getLikes().remove(user.getUid());
+                    post.getLikes().remove(getUid());
                 } else {
                     post.setLikeCount(post.getLikeCount()+1);
-                    post.getLikes().put(user.getUid(), true);
+                    post.getLikes().put(getUid(), true);
                 }
 
                 mutableData.setValue(post);
@@ -170,8 +153,12 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                                    DataSnapshot dataSnapshot) {
 
                 Post post = dataSnapshot.getValue(Post.class);
-                like.setText(""+post.getLikeCount());
+                binding.readTvLike.setText(""+post.getLikeCount());
             }
         });
+    }
+
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }

@@ -13,7 +13,6 @@ import java.util.Map;
 public class Post {
 
     private String uid;
-    private String nickname;
     private String date;
     private double latitude;
     private double longitude;
@@ -24,9 +23,8 @@ public class Post {
 
     public Post() {}
 
-    public Post(String uid, String nickname, String date, double latitude, double longitude, String filename, String content){
+    public Post(String uid, String date, double latitude, double longitude, String filename, String content){
         this.uid = uid;
-        this.nickname = nickname;
         this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -38,7 +36,6 @@ public class Post {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid",uid);
-        result.put("nickname",nickname);
         result.put("date",date);
         result.put("latitude",latitude);
         result.put("longitude",longitude);
@@ -56,14 +53,6 @@ public class Post {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     public String getDate() {

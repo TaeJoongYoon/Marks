@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
 
@@ -86,4 +88,21 @@ public class MapPresenter implements MapContract.Presenter {
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
+    @Override
+    public void setCurrentPlace(DatabaseReference databaseReference, String name, String ID) {
+        Date now = new Date();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        SimpleDateFormat detailFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+
+        String date = dateFormat.format(now);
+        String detail = detailFormat.format(now);
+
+        Place place = new Place(date, name, ID, detail);
+        databaseReference.child("users").child(getUid()).child("places").push().setValue(place);
+    }
+
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
 }

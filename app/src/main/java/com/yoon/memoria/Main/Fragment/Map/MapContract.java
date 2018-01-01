@@ -26,5 +26,6 @@ public class MapContract {
         void markerRemove(GoogleMap googleMap, DataSnapshot dataSnapshot, List<Marker> markers);
         MarkerOptions setSearchLocation(Location location, String markerTitle, String markerSnippet);
         void setCurrentLocation(GoogleMap googleMap, LatLng DEFAULT_LOCATION, Location location);
+        void setCurrentPlace(DatabaseReference databaseReference, String name, String ID);
     }
 }

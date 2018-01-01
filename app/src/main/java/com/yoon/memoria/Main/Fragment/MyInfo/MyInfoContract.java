@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class MyInfoContract {
 
     public interface Presenter{
         List<CalendarDay> eventMark(List<String> events);
-        void eventSetting(List<String> event);
+        void eventSetting(DatabaseReference databaseReference, List<String> event);
         Intent toHistory(CalendarDay date, Activity activity);
     }
 }

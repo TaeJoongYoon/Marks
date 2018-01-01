@@ -22,8 +22,8 @@ public class User {
     public User(){}
 
     public User(String nickname, String password){
-        this.password = password;
         this.nickname = nickname;
+        this.password = password;
     }
 
     @Exclude

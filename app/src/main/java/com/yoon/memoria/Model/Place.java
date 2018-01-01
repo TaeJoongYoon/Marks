@@ -13,13 +13,15 @@ public class Place {
 
     private String date;
     private String placeName;
+    private String placeID;
     private String detail;
 
     public Place(){}
 
-    public Place(String date, String placeName, String detail){
+    public Place(String date, String placeName, String placeID, String detail){
         this.date = date;
         this.placeName = placeName;
+        this.placeID = placeID;
         this.detail = detail;
     }
 
@@ -47,6 +49,14 @@ public class Place {
 
     public void setPlaceName(String placeName) {
         this.placeName = placeName;
+    }
+
+    public String getPlaceID() {
+        return placeID;
+    }
+
+    public void setPlaceID(String placeID) {
+        this.placeID = placeID;
     }
 
     public String getDetail() {

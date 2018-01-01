@@ -4,8 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.yoon.memoria.History.HistoryActivity;
 import com.yoon.memoria.Model.Post;
@@ -28,11 +32,34 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
     }
 
     @Override
-    public void eventSetting(List<String> event) {
-        event.add("2017,10,21");
-        event.add("2017,12,12");
-        event.add("2017,12,31");
-        event.add("2017,12,21");
+    public void eventSetting(DatabaseReference databaseReference, List<String> event) {
+        databaseReference.child("users").child(getUid()).child("posts").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String date = dataSnapshot.child("date").getValue(String.class);
+                event.add(date);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -49,7 +76,7 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
     public List<CalendarDay> eventMark(List<String> events) {
         Calendar calendar = Calendar.getInstance();
         for(String event : events){
-            String[] event_time = event.split(",");
+            String[] event_time = event.split(".");
             int event_year = Integer.parseInt(event_time[0]);
             int event_month = Integer.parseInt(event_time[1]);
             int event_day = Integer.parseInt(event_time[2]);
@@ -60,5 +87,9 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
             dates.add(day);
         }
         return  dates;
+    }
+
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }

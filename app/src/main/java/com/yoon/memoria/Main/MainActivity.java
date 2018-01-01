@@ -1,6 +1,7 @@
 package com.yoon.memoria.Main;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,18 +18,13 @@ import com.yoon.memoria.Main.Fragment.Place.PlaceContract;
 import com.yoon.memoria.Main.Fragment.Place.PlaceFragment;
 import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
+import com.yoon.memoria.databinding.ActivityMainBinding;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity{
-    private FirebaseStorage storage;
-    private StorageSingleton storageSingleton = StorageSingleton.getInstance();
 
-    @BindView(R.id.mainTabLayout) TabLayout tabLayout;
-    @BindView(R.id.mainPager) ViewPager viewPager;
-
+    private ActivityMainBinding binding;
     private MainTapPagerAdapter mainTapPagerAdapter;
 
     private MapFragment mapFragment;
@@ -42,10 +38,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+        binding.setActivity(this);
 
-        init();
         initFragment();
         initTabLayout();
         initViewPager();
@@ -63,16 +58,16 @@ public class MainActivity extends AppCompatActivity{
 
     public void initTabLayout(){
 
-        tabLayout.addTab(tabLayout.newTab().setText("지도"));
-        tabLayout.addTab(tabLayout.newTab().setText("퀴즈"));
-        tabLayout.addTab(tabLayout.newTab().setText("내 페이지"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        binding.mainTabLayout.addTab(binding.mainTabLayout.newTab().setText("지도"));
+        binding.mainTabLayout.addTab(binding.mainTabLayout.newTab().setText("퀴즈"));
+        binding.mainTabLayout.addTab(binding.mainTabLayout.newTab().setText("내 페이지"));
+        binding.mainTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        binding.mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                binding.mainPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -88,24 +83,19 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void initViewPager(){
-        mainTapPagerAdapter = new MainTapPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),
+        mainTapPagerAdapter = new MainTapPagerAdapter(getSupportFragmentManager(), binding.mainTabLayout.getTabCount(),
                                                         mapFragment,
                                                         placeFragment,
                                                         myInfoFragment);
-        viewPager.setAdapter(mainTapPagerAdapter);
-        viewPager.setOffscreenPageLimit(3);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        binding.mainPager.setAdapter(mainTapPagerAdapter);
+        binding.mainPager.setOffscreenPageLimit(3);
+        binding.mainPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.mainTabLayout));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         BusProvider.getInstance().post(new ActivityResultEvent(requestCode, resultCode, data));
-    }
-
-    public void init(){
-        storage = FirebaseStorage.getInstance();
-        storageSingleton.setStorage(storage);
     }
 }
 

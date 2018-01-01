@@ -17,7 +17,7 @@ public class PostingContract {
     }
 
     interface Presenter{
-        void post_to_firebase(String uid, String nickname, String date, double latitude, double longitude, String filename, String content);
+        void post_to_firebase(String uid, String date, double latitude, double longitude, String filename, String content);
         void fileUpload(Uri uri, ProgressDialog progressDialog);
     }
 }

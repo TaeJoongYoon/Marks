@@ -10,9 +10,7 @@ import com.google.firebase.storage.StorageReference;
 public class StorageSingleton {
 
     private static StorageSingleton storageSingleton;
-
-    private FirebaseStorage storage;
-    private StorageReference storageReference;
+    private StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://memoria-186507.appspot.com/").child("images");
 
     public static StorageSingleton getInstance(){
         if(storageSingleton == null)
@@ -20,12 +18,7 @@ public class StorageSingleton {
         return storageSingleton;
     }
 
-    public void setStorage(FirebaseStorage storage) {
-        this.storage = storage;
-    }
-
     public StorageReference getStorageReference() {
-        storageReference = storage.getReferenceFromUrl("gs://memoria-186507.appspot.com/").child("images");
         return storageReference;
     }
 }

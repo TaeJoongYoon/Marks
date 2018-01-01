@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -58,12 +59,10 @@ import com.yoon.memoria.R;
 import com.yoon.memoria.Reading.ReadingActivity;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.Util.Util;
+import com.yoon.memoria.databinding.FragmentMapBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import static android.content.ContentValues.TAG;
 
@@ -71,6 +70,7 @@ import static android.content.ContentValues.TAG;
 public class MapFragment extends Fragment implements MapContract.View, OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
+    private FragmentMapBinding binding;
     private DatabaseReference databaseReference;
     private MapPresenter presenter;
 
@@ -80,8 +80,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 60 * 20;
 
     private PlaceAutocompleteFragment autocompleteFragment;
-    @BindView(R.id.map) MapView mapView = null;
-    @BindView(R.id.mapToolbar) Toolbar toolbar;
 
     private GoogleMap googleMap= null;
     private GoogleApiClient googleApiClient = null;
@@ -91,9 +89,8 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     private final static int MAXENTRIES = 5;
     private String[] LikelyPlaceNames = null;
-    private String[] LikelyAddresses = null;
-    private String[] LikelyAttributions = null;
-    private LatLng[] LikelyLatLngs = null;
+    private String[] LikelyPlaceIDs = null;
+    private String previousPlace = null;
 
     private CameraPosition mCameraPosition;
     private Location mLastKnownLocation;
@@ -122,14 +119,11 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View v = inflater.inflate(R.layout.fragment_map, container, false);
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_map,container,false);
         setHasOptionsMenu(true);
-        ButterKnife.bind(this,v);
 
         initGoogleSearch();
-
-        return v;
+        return binding.getRoot();
     }
 
     @Override
@@ -138,15 +132,15 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
         initToolbar();
 
-        if (mapView != null)
-            mapView.onCreate(savedInstanceState);
+        if (binding.map != null)
+            binding.map.onCreate(savedInstanceState);
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mapView.onStart();
+        binding.map.onStart();
 
         databaseReference.child("post").addChildEventListener(new ChildEventListener() {
             @Override
@@ -180,19 +174,19 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        binding.map.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        binding.map.onPause();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mapView.onStop();
+        binding.map.onStop();
     }
 
     @Override
@@ -213,13 +207,13 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        binding.map.onLowMemory();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapView.onLowMemory();
+        binding.map.onLowMemory();
         if ( googleApiClient != null ) {
             googleApiClient.unregisterConnectionCallbacks(this);
             googleApiClient.unregisterConnectionFailedListener(this);
@@ -232,9 +226,9 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     }
 
     public void initToolbar() {
-        toolbar.inflateMenu(R.menu.menu_map);
+        binding.mapToolbar.inflateMenu(R.menu.menu_map);
 
-        toolbar.setOnMenuItemClickListener(item -> {
+        binding.mapToolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.menu_map:
                     if(postLocation == null)
@@ -408,7 +402,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         }
 
 
-        mapView.getMapAsync(this);
+        binding.map.getMapAsync(this);
         ///
 
         LocationRequest locationRequest = new LocationRequest();
@@ -468,15 +462,11 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             public void onResult(@NonNull PlaceLikelihoodBuffer placeLikelihoods) {
                 int i = 0;
                 LikelyPlaceNames = new String[MAXENTRIES];
-                LikelyAddresses = new String[MAXENTRIES];
-                LikelyAttributions = new String[MAXENTRIES];
-                LikelyLatLngs = new LatLng[MAXENTRIES];
+                LikelyPlaceIDs = new String[MAXENTRIES];
 
                 for(PlaceLikelihood placeLikelihood : placeLikelihoods) {
                     LikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
-                    LikelyAddresses[i] = (String) placeLikelihood.getPlace().getAddress();
-                    LikelyAttributions[i] = (String) placeLikelihood.getPlace().getAttributions();
-                    LikelyLatLngs[i] = placeLikelihood.getPlace().getLatLng();
+                    LikelyPlaceIDs[i] = (String) placeLikelihood.getPlace().getId();
 
                     i++;
                     if(i > MAXENTRIES - 1 ) {
@@ -485,7 +475,14 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 }
 
                 placeLikelihoods.release();
-                //presenter.setCurrentPlace(databaseReference, LikelyPlaceNames[0]);
+
+                if (LikelyPlaceNames[0].equals(previousPlace)){
+                    presenter.setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0]);
+                    previousPlace = null;
+                }
+                else
+                    previousPlace = LikelyPlaceNames[0];
+
             }
         });
 

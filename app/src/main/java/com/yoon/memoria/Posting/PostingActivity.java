@@ -5,47 +5,37 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
+import com.yoon.memoria.databinding.ActivityPostingBinding;
 
 import java.io.File;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PostingActivity extends AppCompatActivity implements PostingContract.View {
 
-    private FirebaseUser user;
+    private ActivityPostingBinding binding;
     private PostingPresenter presenter;
 
     private final int GALLERY_CODE=1112;
 
-    @BindView(R.id.postingToolbar) Toolbar toolbar;
-    @BindView(R.id.post_image) ImageView imageView;
-    @BindView(R.id.postEdit) EditText editText;
-
     private ProgressDialog progressDialog;
 
     private Intent intent;
-    private CalendarDay day;
 
     private String uid;
-    private String nickname;
     private String filename;
     private String content;
     private double latitude;
@@ -58,9 +48,8 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_posting);
-        ButterKnife.bind(this);
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_posting);
+        binding.setActivity(this);
         presenter = new PostingPresenter(this);
 
         initToolbar();
@@ -68,7 +57,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     }
 
     public void init(){
-        imageView.setOnClickListener(view -> {
+        binding.postImage.setOnClickListener(view -> {
             TedRx2Permission.with(this)
                     .setRationaleTitle(R.string.rationale_title)
                     .setRationaleMessage(R.string.rationale_picture_message)
@@ -90,15 +79,15 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         intent = getIntent();
 
         uid = getUid();
-        nickname = "태중이";
         latitude = intent.getDoubleExtra("latitude",0);
         longitude = intent.getDoubleExtra("longitude",0);
-        day = CalendarDay.today();
-        date = day.getYear() +"," + (day.getMonth()+1) + "," + day.getDay();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+        Date now = new Date();
+        date = format.format(now);
     }
 
     public void initToolbar(){
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.postingToolbar);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(null);
@@ -142,9 +131,9 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     @Override
     public void success() {
         filename = presenter.getFilename();
-        content = editText.getText().toString();
+        content = binding.postEdit.getText().toString();
         progressDialog.dismiss();
-        presenter.post_to_firebase(uid,nickname,date,latitude,longitude,filename,content);
+        presenter.post_to_firebase(uid,date,latitude,longitude,filename,content);
     }
 
     @Override
@@ -165,7 +154,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
                         .load(file)
                         .override(Util.dpToPixel(this,260),Util.dpToPixel(this,260))
                         .fitCenter()
-                        .into(imageView);
+                        .into(binding.postImage);
             }
         }
     }

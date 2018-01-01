@@ -1,6 +1,7 @@
 package com.yoon.memoria.Main.Fragment.Place;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,13 +11,12 @@ import android.widget.Button;
 
 import com.yoon.memoria.Quiz.QuizActivity;
 import com.yoon.memoria.R;
+import com.yoon.memoria.databinding.FragmentPlaceBinding;
 
 
 public class PlaceFragment extends Fragment implements PlaceContract.View {
-
+    private FragmentPlaceBinding binding;
     private PlacePresenter presenter;
-
-    private Button btn_quiz;
 
     public PlaceFragment() {
         presenter = new PlacePresenter(this);
@@ -30,8 +30,8 @@ public class PlaceFragment extends Fragment implements PlaceContract.View {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.fragment_place, container, false);
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_place,container,false);
+        return binding.getRoot();
     }
 
     @Override
@@ -42,8 +42,7 @@ public class PlaceFragment extends Fragment implements PlaceContract.View {
     }
 
     public void init(){
-        btn_quiz = getView().findViewById(R.id.btn_quiz);
-        btn_quiz.setOnClickListener(
+        binding.btnQuiz.setOnClickListener(
                 view -> getActivity().startActivity(new Intent(getActivity(), QuizActivity.class))
         );
     }
