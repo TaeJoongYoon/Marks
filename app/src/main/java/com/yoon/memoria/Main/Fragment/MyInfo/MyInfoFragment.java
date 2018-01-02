@@ -1,15 +1,18 @@
 package com.yoon.memoria.Main.Fragment.MyInfo;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -86,7 +89,10 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
 
         binding.myinfoToolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.menu_myinfo:
+                case R.id.myinfo_edit:
+                    show();
+                    break;
+                case R.id.myinfo_logout:
                     FirebaseAuth.getInstance().signOut();
                     startActivity(new Intent(getActivity(), SignInActivity.class));
                     Util.makeToast(getActivity(),"로그아웃 되었습니다!");
@@ -147,5 +153,29 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
 
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
+
+    public void show(){
+        final EditText edittext = new EditText(getActivity());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("별명 수정하기");
+        builder.setMessage("수정하실 별명을 입력해주세요.");
+        builder.setView(edittext);
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String temp = edittext.getText().toString();
+                        binding.nicknameMyinfo.setText(temp);
+                        databaseReference.child("users").child(getUid()).child("nickname").setValue(temp);
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
     }
 }

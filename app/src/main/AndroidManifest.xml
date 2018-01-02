@@ -3,7 +3,7 @@
     package="com.yoon.memoria">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -18,8 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Main.MainActivity"/>
-        <activity android:name=".Splash.SplashActivity"
+        <activity android:name=".Main.MainActivity" />
+        <activity
+            android:name=".Splash.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,11 +33,13 @@
         <activity android:name=".Posting.PostingActivity" />
         <activity android:name=".Quiz.QuizActivity" />
         <activity android:name=".History.HistoryActivity" />
-        <activity android:name=".Reading.ReadingActivity"></activity>
+        <activity android:name=".Reading.ReadingActivity" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBKhqvguixfw97_20QAT8kcILelZRottI0"
-            />
+            android:value="AIzaSyBKhqvguixfw97_20QAT8kcILelZRottI0" />
+
+        <activity android:name=".User.UserActivity"></activity>
     </application>
 
 </manifest>

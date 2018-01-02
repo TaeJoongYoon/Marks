@@ -2,9 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_myinfo"
-        android:orderInCategory="0"
-        android:title="Logout"
-        app:showAsAction="always">
+        android:id="@+id/myinfo_edit"
+        android:title="별명 수정하기"
+        app:showAsAction="never">
+    </item>
+    <item
+        android:id="@+id/myinfo_logout"
+        android:title="로그아웃"
+        app:showAsAction="never">
     </item>
 </menu>

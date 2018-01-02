@@ -142,7 +142,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         super.onStart();
         binding.map.onStart();
 
-        databaseReference.child("post").addChildEventListener(new ChildEventListener() {
+        databaseReference.child("posts").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 presenter.markerAdd(googleMap,dataSnapshot,markers);
@@ -213,7 +213,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onDestroy() {
         super.onDestroy();
-        binding.map.onLowMemory();
+        binding.map.onDestroy();
         if ( googleApiClient != null ) {
             googleApiClient.unregisterConnectionCallbacks(this);
             googleApiClient.unregisterConnectionFailedListener(this);
@@ -279,6 +279,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 if (currentMarker != null) currentMarker.remove();
                 MarkerOptions markerOptions = presenter.setSearchLocation(location,place.getName().toString(),place.getAddress().toString());
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
                 currentMarker = googleMap.addMarker(markerOptions);
 
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
@@ -294,8 +295,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     public void toReading(Marker marker) {
         Intent intent = new Intent(getContext(), ReadingActivity.class);
-        intent.putExtra("latitude",marker.getPosition().latitude);
-        intent.putExtra("longitude",marker.getPosition().longitude);
+        intent.putExtra("Uid",marker.getTitle());
         startActivity(intent);
     }
 
@@ -353,7 +353,8 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
         googleMap.setOnMarkerClickListener(marker -> {
-            toReading(marker);
+            if (marker.getSnippet().equals("POST"))
+                toReading(marker);
             return true;
         });
     }

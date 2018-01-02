@@ -43,7 +43,10 @@ public class MapPresenter implements MapContract.Presenter {
         LatLng latLng = new LatLng(post.getLatitude(),post.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title(post.getUid());
+        markerOptions.title(dataSnapshot.getKey());
+        markerOptions.snippet("POST");
+        if(googleMap==null)
+            System.out.println("CCC");
         Marker marker = googleMap.addMarker(markerOptions);
         markers.add(marker);
     }
