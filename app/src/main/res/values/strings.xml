@@ -8,4 +8,8 @@
 
     <string name="rationale_denied_message"> 서비스를 이용하기 위해선 권한이 필요합니다.\n\n다음 경로에서 승인해주세요.\n[설정] > [권한]</string>
     <string name="request_sign_up"> <u>아직 회원이 아니신가요?</u></string>
+
+    <string name="selection_map"> 지도 </string>
+    <string name="selection_place"> 방문장소 </string>
+    <string name="selection_home"> 내 정보 </string>
 </resources>

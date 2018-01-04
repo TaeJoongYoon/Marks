@@ -13,7 +13,7 @@ import com.yoon.memoria.Main.Fragment.Place.PlaceFragment;
  * Created by Yoon on 2017-11-01.
  */
 
-public class MainTapPagerAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private int tabCount;
 
@@ -21,10 +21,10 @@ public class MainTapPagerAdapter extends FragmentStatePagerAdapter {
     private PlaceFragment placeFragment;
     private MyInfoFragment myInfoFragment;
 
-    public MainTapPagerAdapter(FragmentManager fm, int tabCount,
-                               MapFragment mapFragment,
-                               PlaceFragment placeFragment,
-                               MyInfoFragment myInfoFragment
+    public ViewPagerAdapter(FragmentManager fm, int tabCount,
+                            MapFragment mapFragment,
+                            PlaceFragment placeFragment,
+                            MyInfoFragment myInfoFragment
                                ) {
         super(fm);
         this.tabCount = tabCount;

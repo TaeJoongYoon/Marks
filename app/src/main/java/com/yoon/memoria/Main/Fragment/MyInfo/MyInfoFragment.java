@@ -1,5 +1,6 @@
 package com.yoon.memoria.Main.Fragment.MyInfo;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -90,7 +91,7 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         binding.myinfoToolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.myinfo_edit:
-                    show();
+                    presenter.show();
                     break;
                 case R.id.myinfo_logout:
                     FirebaseAuth.getInstance().signOut();
@@ -155,27 +156,15 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
-    public void show(){
-        final EditText edittext = new EditText(getActivity());
+    @Override
+    public void nicknameEdit(EditText editText){
+        String temp = editText.getText().toString();
+        binding.nicknameMyinfo.setText(temp);
+        databaseReference.child("users").child(getUid()).child("nickname").setValue(temp);
+    }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("별명 수정하기");
-        builder.setMessage("수정하실 별명을 입력해주세요.");
-        builder.setView(edittext);
-        builder.setPositiveButton("확인",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String temp = edittext.getText().toString();
-                        binding.nicknameMyinfo.setText(temp);
-                        databaseReference.child("users").child(getUid()).child("nickname").setValue(temp);
-                    }
-                });
-        builder.setNegativeButton("취소",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-        builder.show();
+    @Override
+    public Context getAct(){
+        return getActivity();
     }
 }

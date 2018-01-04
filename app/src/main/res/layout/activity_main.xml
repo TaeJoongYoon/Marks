@@ -14,21 +14,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.TabLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/mainTabLayout"
-            android:layout_alignParentBottom="true"
-            ></android.support.design.widget.TabLayout>
-
         <android.support.v4.view.ViewPager
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/mainPager"
-            android:layout_above="@+id/mainTabLayout"
-            >
+            android:layout_above="@+id/bottom_navigation"
+            />
 
-        </android.support.v4.view.ViewPager>
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:itemBackground="@color/white"
+            app:itemIconTint="@drawable/bottom_selection_color"
+            app:itemTextColor="@drawable/bottom_selection_color"
+            app:layout_behavior="tech.thdev.app.view.BottomNavigationBehavior"
+            app:menu="@menu/menu_bottom" />
+
     </RelativeLayout>
 </layout>
 

@@ -18,22 +18,37 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Main.MainActivity" />
+        <activity
+            android:name=".Main.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Splash.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignIn.SignInActivity" />
-        <activity android:name=".SignUp.SignUpActivity" />
-        <activity android:name=".Posting.PostingActivity" />
-        <activity android:name=".Quiz.QuizActivity" />
-        <activity android:name=".History.HistoryActivity" />
-        <activity android:name=".Reading.ReadingActivity" />
+        <activity
+            android:name=".SignIn.SignInActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SignUp.SignUpActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Posting.PostingActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Quiz.QuizActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".History.HistoryActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Reading.ReadingActivity"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

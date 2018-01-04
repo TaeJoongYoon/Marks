@@ -1,8 +1,11 @@
 package com.yoon.memoria.Main.Fragment.MyInfo;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -87,6 +90,29 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
             dates.add(day);
         }
         return  dates;
+    }
+
+    @Override
+    public void show(){
+        final EditText editText = new EditText(view.getAct());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getAct());
+        builder.setTitle("별명 수정하기");
+        builder.setMessage("수정하실 별명을 입력해주세요.");
+        builder.setView(editText);
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        view.nicknameEdit(editText);
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
     }
 
     public String getUid() {

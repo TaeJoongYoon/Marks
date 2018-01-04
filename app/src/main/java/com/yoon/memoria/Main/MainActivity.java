@@ -2,12 +2,12 @@ package com.yoon.memoria.Main;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.ImageButton;
 
-import com.google.firebase.storage.FirebaseStorage;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.EventBus.BusProvider;
 import com.yoon.memoria.Main.Fragment.Map.MapContract;
@@ -16,7 +16,6 @@ import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoContract;
 import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoFragment;
 import com.yoon.memoria.Main.Fragment.Place.PlaceContract;
 import com.yoon.memoria.Main.Fragment.Place.PlaceFragment;
-import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.databinding.ActivityMainBinding;
 
@@ -25,7 +24,8 @@ import com.yoon.memoria.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity{
 
     private ActivityMainBinding binding;
-    private MainTapPagerAdapter mainTapPagerAdapter;
+    private ViewPagerAdapter viewPagerAdapter;
+    private MenuItem prevBottomNavigation;
 
     private MapFragment mapFragment;
     private PlaceFragment placeFragment;
@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity{
         binding.setActivity(this);
 
         initFragment();
-        initTabLayout();
         initViewPager();
+        initTabLayout();
 
         mapPresenter = mapFragment.getPresenter();
         placePresenter = placeFragment.getPresenter();
@@ -57,39 +57,54 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void initTabLayout(){
-
-        binding.mainTabLayout.addTab(binding.mainTabLayout.newTab().setText("지도"));
-        binding.mainTabLayout.addTab(binding.mainTabLayout.newTab().setText("퀴즈"));
-        binding.mainTabLayout.addTab(binding.mainTabLayout.newTab().setText("내 페이지"));
-        binding.mainTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        binding.mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                binding.mainPager.setCurrentItem(tab.getPosition());
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_one:
+                    binding.mainPager.setCurrentItem(0);
+                    return true;
+                case R.id.action_two:
+                    binding.mainPager.setCurrentItem(1);
+                    return true;
+                case R.id.action_three:
+                    binding.mainPager.setCurrentItem(2);
+                    return true;
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            return false;
         });
     }
 
     public void initViewPager(){
-        mainTapPagerAdapter = new MainTapPagerAdapter(getSupportFragmentManager(), binding.mainTabLayout.getTabCount(),
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3,
                                                         mapFragment,
                                                         placeFragment,
                                                         myInfoFragment);
-        binding.mainPager.setAdapter(mainTapPagerAdapter);
+        binding.mainPager.setAdapter(viewPagerAdapter);
         binding.mainPager.setOffscreenPageLimit(3);
-        binding.mainPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.mainTabLayout));
+        binding.mainPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (prevBottomNavigation != null) {
+                    prevBottomNavigation.setChecked(false);
+                }
+                else
+                {
+                    binding.bottomNavigation.getMenu().getItem(0).setChecked(false);
+                }
+
+                binding.bottomNavigation.getMenu().getItem(position).setChecked(true);
+                prevBottomNavigation = binding.bottomNavigation.getMenu().getItem(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
@@ -97,5 +112,6 @@ public class MainActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         BusProvider.getInstance().post(new ActivityResultEvent(requestCode, resultCode, data));
     }
+
 }
 

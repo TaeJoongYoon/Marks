@@ -38,6 +38,7 @@ import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -76,14 +77,15 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 1000 * 60 * 20;
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 60 * 20;
+    private static final int UPDATE_INTERVAL_MS = 1000 * 60 * 20;           // 20분
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 60 * 20;   // 20분
 
     private PlaceAutocompleteFragment autocompleteFragment;
 
     private GoogleMap googleMap= null;
     private GoogleApiClient googleApiClient = null;
     private Marker currentMarker = null;
+
     private Location postLocation = null;
     private List<Marker> markers = new ArrayList<>(0);
 
@@ -97,6 +99,11 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
+
+    private LocationRequest locationRequest = new LocationRequest()
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+            .setInterval(UPDATE_INTERVAL_MS)
+            .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
 
     public MapFragment() {
         presenter = new MapPresenter(this);
@@ -122,6 +129,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_map,container,false);
         setHasOptionsMenu(true);
 
+        binding.map.getMapAsync(this);
         initGoogleSearch();
         return binding.getRoot();
     }
@@ -141,6 +149,9 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onStart() {
         super.onStart();
         binding.map.onStart();
+
+        if(googleApiClient != null && googleApiClient.isConnected() == false)
+            googleApiClient.connect();
 
         databaseReference.child("posts").addChildEventListener(new ChildEventListener() {
             @Override
@@ -225,6 +236,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         }
     }
 
+    @SuppressLint("MissingPermission")
     public void initToolbar() {
         binding.mapToolbar.inflateMenu(R.menu.menu_map);
 
@@ -234,10 +246,11 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                     if(postLocation == null)
                         Util.makeToast(getActivity(),"위치가 확인되지 않습니다");
                     else {
+                        postLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                         Intent intent = new Intent(getActivity(), PostingActivity.class);
                         intent.putExtra("latitude", postLocation.getLatitude());
                         intent.putExtra("longitude", postLocation.getLongitude());
-                        getActivity().startActivityForResult(intent, 1);
+                        //getActivity().startActivityForResult(intent, 1);
                     }
                     break;
             }
@@ -256,8 +269,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 Util.makeToast(getActivity(),"글쓰기 성공");
-                //위도 postLocation.getLatitude()
-                //경도 postLocation.getLongitude()
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 Util.makeToast(getActivity(),"글쓰기 실패");
@@ -329,6 +340,16 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                     if (tedPermissionResult.isGranted()) {
                         googleMap.setMyLocationEnabled(true);
                         googleMap.getUiSettings().setCompassEnabled(true);
+                        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                        googleMap.setOnMarkerClickListener(marker -> {
+                            if (marker.getSnippet().equals("POST"))
+                                toReading(marker);
+                            return true;
+                        });
+                        googleMap.setOnMapClickListener(latLng -> {
+                            if(currentMarker != null)
+                                currentMarker.remove();
+                        });
                         Util.makeToast(getActivity(), "권한 승인");
                     } else {
                         Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
@@ -352,11 +373,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15));
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-        googleMap.setOnMarkerClickListener(marker -> {
-            if (marker.getSnippet().equals("POST"))
-                toReading(marker);
-            return true;
-        });
     }
     private void buildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -365,9 +381,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 .addApi(LocationServices.API)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(getActivity(), this)
                 .build();
-        googleApiClient.connect();
     }
 
     public boolean checkLocationServicesStatus() {
@@ -379,37 +393,13 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        startLocationUpdates();
+    }
+
+    public void startLocationUpdates(){
         if ( !checkLocationServicesStatus()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("위치 서비스 비활성화");
-            builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n" +
-                    "위치 설정을 수정하십시오.");
-            builder.setCancelable(true);
-            builder.setPositiveButton("설정", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent callGPSSettingIntent =
-                            new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivityForResult(callGPSSettingIntent, GPS_ENABLE_REQUEST_CODE);
-                }
-            });
-            builder.setNegativeButton("취소", new DialogInterface.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-            builder.create().show();
+            showDialogForLocation();
         }
-
-
-        binding.map.getMapAsync(this);
-        ///
-
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(UPDATE_INTERVAL_MS);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
 
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if ( ActivityCompat.checkSelfPermission(getActivity(),
@@ -422,9 +412,32 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             LocationServices.FusedLocationApi
                     .requestLocationUpdates(googleApiClient, locationRequest, this);
         }
-
+        googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
+    public void showDialogForLocation(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("위치 서비스 비활성화");
+        builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n" +
+                "위치 설정을 수정하십시오.");
+        builder.setCancelable(true);
+        builder.setPositiveButton("설정", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent callGPSSettingIntent =
+                        new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivityForResult(callGPSSettingIntent, GPS_ENABLE_REQUEST_CODE);
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.create().show();
+    }
     @Override
     public void onConnectionSuspended(int cause) {
         if ( cause ==  CAUSE_NETWORK_LOST )
@@ -440,14 +453,12 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         location.setLatitude(DEFAULT_LOCATION.latitude);
         location.setLongitude((DEFAULT_LOCATION.longitude));
 
-        postLocation = location;
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
         Util.makeToast(getActivity(), "서비스와 연결이 끊겼습니다.");
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        postLocation = location;
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
         Log.i(TAG, "onLocationChanged call..");
         searchCurrentPlaces();
@@ -483,7 +494,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 }
                 else
                     previousPlace = LikelyPlaceNames[0];
-
             }
         });
 

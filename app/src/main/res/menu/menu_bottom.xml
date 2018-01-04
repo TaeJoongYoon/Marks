@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_one"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_satellite_white_48dp"
+        android:title="@string/selection_map" />
+    <item
+        android:id="@+id/action_two"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_storage_white_48dp"
+        android:title="@string/selection_place" />
+    <item
+        android:id="@+id/action_three"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_account_box_white_48dp"
+        android:title="@string/selection_home" />
+</menu>
