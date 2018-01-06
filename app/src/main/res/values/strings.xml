@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Memoria</string>
+    <string name="app_name">LEMON</string>
 
     <string name="rationale_title">권한 요청</string>
     <string name="rationale_location_message"> 서비스를 이용하기 위해서는 <b>위치권한</b>이 필요합니다.</string>
@@ -12,4 +12,7 @@
     <string name="selection_map"> 지도 </string>
     <string name="selection_place"> 방문장소 </string>
     <string name="selection_home"> 내 정보 </string>
+
+    <string name="follower"> FOLLOWER </string>
+    <string name="following"> FOLLOWING </string>
 </resources>

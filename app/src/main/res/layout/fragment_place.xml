@@ -14,6 +14,11 @@
             android:id="@+id/placeToolbar"
             android:background="@color/colorPrimary"
             >
+            <ImageView
+                android:layout_width="@dimen/list_item_avatar_size"
+                android:layout_height="@dimen/list_item_avatar_size"
+                android:src="@mipmap/ic_launcher"
+                android:layout_marginRight="@dimen/default_padding"/>
         </android.support.v7.widget.Toolbar>
 
         <RelativeLayout

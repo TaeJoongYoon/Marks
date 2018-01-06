@@ -1,11 +1,18 @@
 package com.yoon.memoria.Main.Fragment.MyInfo;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +24,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,16 +36,21 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.EventDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.OneDayDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SaturdayDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SundayDecorator;
+import com.yoon.memoria.Model.User;
+import com.yoon.memoria.Posting.PostingActivity;
 import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.SignIn.SignInActivity;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.FragmentMyinfoBinding;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -47,10 +61,17 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     private FragmentMyinfoBinding binding;
     private MyInfoPresenter presenter;
     private DatabaseReference databaseReference;
+    private StorageSingleton storageSingleton = StorageSingleton.getInstance();
 
     private OneDayDecorator oneDayDecorator;
     private List<String> event = new ArrayList(0);
     private List<CalendarDay> calendarDays = new ArrayList(0);
+
+    private User user;
+    private String filename;
+
+    private final int GALLERY_CODE = 1112;
+    private final int CROP_IMAGE = 1113;
 
     public MyInfoFragment() {
         presenter = new MyInfoPresenter(this);
@@ -65,8 +86,8 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_myinfo,container,false);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         initToolbar();
-        init();
         calendarinit();
         return binding.getRoot();
     }
@@ -85,6 +106,11 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         binding.calendarView.addDecorator(new EventDecorator(Color.GREEN, calendarDays,getActivity()));
     }
 
+    @Override
+    public void onStart() {
+        init();
+        super.onStart();
+    }
     public void initToolbar() {
         binding.myinfoToolbar.inflateMenu(R.menu.menu_myinfo);
 
@@ -105,12 +131,41 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     }
 
     public void init(){
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("users").child(getUid()).child("nickname").addValueEventListener(new ValueEventListener() {
+
+        binding.myinfoProfile.setOnClickListener(view -> {
+            TedRx2Permission.with(getActivity())
+                    .setRationaleTitle(R.string.rationale_title)
+                    .setRationaleMessage(R.string.rationale_picture_message)
+                    .setDeniedMessage(R.string.rationale_denied_message)
+                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .request()
+                    .subscribe(tedPermissionResult -> {
+                        if (tedPermissionResult.isGranted()) {
+                            Intent intent = new Intent(Intent.ACTION_PICK);
+                            intent.setType("image/*");
+                            startActivityForResult(intent, GALLERY_CODE);
+                        } else {
+                            Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
+                        }
+                    }, throwable -> {
+                    }, () -> {
+                    });
+        });
+
+        databaseReference.child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String nickname = dataSnapshot.getValue(String.class);
-                binding.nicknameMyinfo.setText(nickname);
+                user = dataSnapshot.getValue(User.class);
+                binding.myinfoNickname.setText(user.getNickname());
+                if (user.getImgUri().equals("NULL"))
+                    binding.myinfoProfile.setImageResource(R.drawable.ic_face_black_48dp);
+                else
+                    storageSingleton.getStorageReference().child(user.getImgUri()).getDownloadUrl().addOnSuccessListener(
+                            uri -> UIsetting(uri)
+                    );
+
+                binding.myinfoFollower.setText(""+user.getFollowerCount());
+                binding.myinfoFollowing.setText(""+user.getFollowingCount());
             }
 
             @Override
@@ -159,12 +214,75 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     @Override
     public void nicknameEdit(EditText editText){
         String temp = editText.getText().toString();
-        binding.nicknameMyinfo.setText(temp);
+        binding.myinfoNickname.setText(temp);
         databaseReference.child("users").child(getUid()).child("nickname").setValue(temp);
     }
 
     @Override
     public Context getAct(){
         return getActivity();
+    }
+
+    public void UIsetting(Uri uri){
+        Glide.with(this)
+                .load(uri)
+                .centerCrop()
+                .into(binding.myinfoProfile);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK)
+            return;
+        else{
+            switch (requestCode){
+                case GALLERY_CODE:
+
+                    Uri mImageCaptureUri = data.getData();
+                    Intent intent = new Intent("com.android.camera.action.CROP");
+                    intent.setDataAndType(mImageCaptureUri, "image/*");
+
+                    intent.putExtra("outputX", Util.dpToPixel(getActivity(),80)); // CROP한 이미지의 x축 크기
+                    intent.putExtra("outputY", Util.dpToPixel(getActivity(),80)); // CROP한 이미지의 y축 크기
+                    intent.putExtra("aspectX", 1); // CROP 박스의 X축 비율
+                    intent.putExtra("aspectY", 1); // CROP 박스의 Y축 비율
+                    intent.putExtra("scale", true);
+                    intent.putExtra("return-data", true);
+                    startActivityForResult(intent, CROP_IMAGE);
+
+                    break;
+                case CROP_IMAGE:
+
+                    final Bundle extras = data.getExtras();
+                    Bitmap bitmap = extras.getParcelable("data");
+                    Uri uri = getImageUri(getActivity(), bitmap);
+                    presenter.fileUpload(uri);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void success() {
+        filename = presenter.getFilename();
+        if (!(user.getImgUri().equals("NULL")))
+        storageSingleton.getStorageReference().child(user.getImgUri()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+            }
+        });
+        presenter.profile_to_firebase(filename);
+    }
+
+    @Override
+    public void failed() {
+        Util.makeToast(getActivity(),"사진수정 실패!");
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 }

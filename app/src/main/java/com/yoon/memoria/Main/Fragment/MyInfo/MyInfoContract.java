@@ -3,6 +3,7 @@ package com.yoon.memoria.Main.Fragment.MyInfo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 
@@ -24,6 +25,8 @@ public class MyInfoContract {
         Presenter getPresenter();
         Context getAct();
         void nicknameEdit(EditText editText);
+        void success();
+        void failed();
     }
 
     public interface Presenter{
@@ -31,5 +34,7 @@ public class MyInfoContract {
         void eventSetting(DatabaseReference databaseReference, List<String> event);
         Intent toHistory(CalendarDay date, Activity activity);
         void show();
+        void profile_to_firebase(String filename);
+        void fileUpload(Uri filePath);
     }
 }

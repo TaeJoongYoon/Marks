@@ -17,6 +17,5 @@ public class ReadingContract {
     }
 
     interface Presenter{
-        boolean inputData(DataSnapshot dataSnapshot, double latitude, double longitude);
     }
 }

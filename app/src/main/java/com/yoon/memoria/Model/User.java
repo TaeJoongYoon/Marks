@@ -13,7 +13,7 @@ import java.util.Map;
 public class User {
 
     private String nickname;
-    private String password;
+    private String imgUri;
     private int followingCount = 0;
     private Map<String, Boolean> following = new HashMap<>();
     private int followerCount = 0;
@@ -21,16 +21,15 @@ public class User {
 
     public User(){}
 
-    public User(String nickname, String password){
+    public User(String nickname,String imgUri){
         this.nickname = nickname;
-        this.password = password;
+        this.imgUri = imgUri;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("nickname", nickname);
-        result.put("password", password);
         result.put("followingCount", followingCount);
         result.put("following",following);
         result.put("followerCount",followerCount);
@@ -45,14 +44,6 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public int getFollowingCount() {
@@ -85,5 +76,13 @@ public class User {
 
     public void setFollower(Map<String, Boolean> follower) {
         this.follower = follower;
+    }
+
+    public String getImgUri() {
+        return imgUri;
+    }
+
+    public void setImgUri(String imgUri) {
+        this.imgUri = imgUri;
     }
 }

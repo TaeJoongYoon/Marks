@@ -18,14 +18,4 @@ public class ReadingPresenter implements ReadingContract.Presenter {
         this.view = view;
     }
 
-    @Override
-    public boolean inputData(DataSnapshot dataSnapshot, double latitude, double longitude) {
-        Post post = dataSnapshot.getValue(Post.class);
-
-        if(post.getLatitude() == latitude &&
-                post.getLongitude() == longitude)
-            return true;
-        else
-            return false;
-    }
 }

@@ -57,24 +57,15 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     }
 
     public void init(){
-        binding.postImage.setOnClickListener(view -> {
-            TedRx2Permission.with(this)
-                    .setRationaleTitle(R.string.rationale_title)
-                    .setRationaleMessage(R.string.rationale_picture_message)
-                    .setDeniedMessage(R.string.rationale_denied_message)
-                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    .request()
-                    .subscribe(tedPermissionResult -> {
-                        if (tedPermissionResult.isGranted()) {
-                            Intent intent = new Intent(Intent.ACTION_PICK);
-                            intent.setType("image/*");
-                            startActivityForResult(intent, GALLERY_CODE);
-                        } else {
-                            Util.makeToast(this, "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
-                        }
-                    }, throwable -> {
-                    }, () -> {
-                    });
+        binding.postBtn.setOnClickListener(view -> {
+            if(filePath.length() <= 0)
+                Util.makeToast(this, "사진이 없습니다!");
+            else {
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setTitle("업로드중...");
+                progressDialog.show();
+                presenter.fileUpload(uri, progressDialog);
+            }
         });
         intent = getIntent();
 
@@ -90,6 +81,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         setSupportActionBar(binding.postingToolbar);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_48dp);
         getSupportActionBar().setTitle(null);
     }
 
@@ -108,15 +100,25 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
                 finish();
                 break;
             case R.id.menu_post:
-                if(filePath.length() <= 0)
-                    Util.makeToast(this, "사진이 없습니다!");
-                else {
-                    progressDialog = new ProgressDialog(this);
-                    progressDialog.setTitle("업로드중...");
-                    progressDialog.show();
-                    presenter.fileUpload(uri, progressDialog);
-                    break;
-                }
+                    TedRx2Permission.with(this)
+                            .setRationaleTitle(R.string.rationale_title)
+                            .setRationaleMessage(R.string.rationale_picture_message)
+                            .setDeniedMessage(R.string.rationale_denied_message)
+                            .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            .request()
+                            .subscribe(tedPermissionResult -> {
+                                if (tedPermissionResult.isGranted()) {
+                                    Intent intent = new Intent(Intent.ACTION_PICK);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, GALLERY_CODE);
+                                } else {
+                                    Util.makeToast(this, "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
+                                }
+                            }, throwable -> {
+                            }, () -> {
+                            });
+
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -152,8 +154,6 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
             }else {
                 Glide.with(this)
                         .load(file)
-                        .override(Util.dpToPixel(this,260),Util.dpToPixel(this,260))
-                        .fitCenter()
                         .into(binding.postImage);
             }
         }

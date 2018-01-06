@@ -24,6 +24,7 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.yoon.memoria.Model.Post;
+import com.yoon.memoria.Model.User;
 import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.User.UserActivity;
@@ -34,7 +35,7 @@ import static com.yoon.memoria.R.id.read_delete;
 import static com.yoon.memoria.R.id.read_edit;
 
 
-public class ReadingActivity extends AppCompatActivity implements ReadingContract.View{
+public class ReadingActivity extends AppCompatActivity implements ReadingContract.View, View.OnClickListener{
     private ActivityReadingBinding binding;
     private StorageSingleton storageSingleton = StorageSingleton.getInstance();
     private DatabaseReference databaseReference;
@@ -61,9 +62,11 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
             public void onDataChange(DataSnapshot dataSnapshot) {
                 post = dataSnapshot.getValue(Post.class);
                 foundData();
-                binding.readBtnLike.setOnClickListener(view -> {
-                    onStarClicked(databaseReference.child("posts").child(postUid));
-                });
+                if (post.getLikes().containsKey(getUid())) {
+                    binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
+                } else {
+                    binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_border_black_48dp);
+                }
             }
 
             @Override
@@ -83,35 +86,33 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_48dp);
         getSupportActionBar().setTitle(null);
     }
 
     public void init(){
         intent = getIntent();
         postUid = intent.getStringExtra("Uid");
-        binding.readBtnEdit.setOnClickListener(view -> {
-            String temp = binding.readEtContent.getText().toString();
-            binding.readEtContent.setVisibility(View.GONE);
-            binding.readTvContent.setVisibility(View.VISIBLE);
-            binding.readTvContent.setText(temp);
-            binding.readBtnEdit.setVisibility(View.GONE);
+        binding.readProfile.setOnClickListener(this);
+        binding.readTvUsername.setOnClickListener(this);
+        binding.readBtnEdit.setOnClickListener(this);
+        binding.readBtnLike.setOnClickListener(this);
 
-            databaseReference.child("posts").child(postUid).child("content").setValue(temp);
-            databaseReference.child("users").child(getUid()).child("posts").child(postUid).child("content").setValue(temp);
-        });
     }
 
     public void foundData(){
-        databaseReference.child("users").child(post.getUid()).child("nickname").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(post.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String username = dataSnapshot.getValue(String.class);
-                binding.readTvUsername.setText(username);
-                binding.readTvUsername.setOnClickListener(view -> {
-                    Intent intent = new Intent(ReadingActivity.this, UserActivity.class);
-                    intent.putExtra("Uid",post.getUid());
-                    startActivity(intent);
-                });
+                User user = dataSnapshot.getValue(User.class);
+
+                if (user.getImgUri().equals("NULL"))
+                    binding.readProfile.setImageResource(R.drawable.ic_face_black_48dp);
+                else
+                    storageSingleton.getStorageReference().child(user.getImgUri()).getDownloadUrl().addOnSuccessListener(
+                            uri -> profileSetting(uri)
+                    );
+                binding.readTvUsername.setText(user.getNickname());
             }
 
             @Override
@@ -125,11 +126,16 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         );
     }
 
+    public void profileSetting(Uri uri){
+        Glide.with(this)
+                .load(uri)
+                .centerCrop()
+                .into(binding.readProfile);
+    }
+
     public void UIsetting(Uri uri){
         Glide.with(this)
                 .load(uri)
-                .override(Util.dpToPixel(this,260), Util.dpToPixel(this,260))
-                .fitCenter()
                 .into(binding.readImage);
 
         binding.readTvLike.setText(""+post.getLikeCount());
@@ -138,7 +144,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         binding.readProgress.setVisibility(View.GONE);
     }
 
-    private void onStarClicked(DatabaseReference postRef) {
+    public void onStarClicked(DatabaseReference postRef) {
         postRef.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -152,6 +158,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                 if (post.getLikes().containsKey(getUid())) {
                     post.setLikeCount(post.getLikeCount()-1);
                     post.getLikes().remove(getUid());
+
                 } else {
                     post.setLikeCount(post.getLikeCount()+1);
                     post.getLikes().put(getUid(), true);
@@ -167,6 +174,10 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
                 Post post = dataSnapshot.getValue(Post.class);
                 binding.readTvLike.setText(""+post.getLikeCount());
+                if (post.getLikes().containsKey(getUid()))
+                    binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
+                else
+                    binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_border_black_48dp);
             }
         });
     }
@@ -211,5 +222,30 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.read_profile:
+            case R.id.read_tv_username:
+                Intent intent = new Intent(ReadingActivity.this, UserActivity.class);
+                intent.putExtra("Uid",post.getUid());
+                startActivity(intent);
+                break;
+            case R.id.read_btn_edit:
+                String temp = binding.readEtContent.getText().toString();
+                binding.readEtContent.setVisibility(View.GONE);
+                binding.readTvContent.setVisibility(View.VISIBLE);
+                binding.readTvContent.setText(temp);
+                binding.readBtnEdit.setVisibility(View.GONE);
+
+                databaseReference.child("posts").child(postUid).child("content").setValue(temp);
+                databaseReference.child("users").child(getUid()).child("posts").child(postUid).child("content").setValue(temp);
+                break;
+            case R.id.read_btn_like:
+                onStarClicked(databaseReference.child("posts").child(postUid));
+                break;
+        }
     }
 }

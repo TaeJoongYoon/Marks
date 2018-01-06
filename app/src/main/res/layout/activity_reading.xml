@@ -22,6 +22,24 @@
             android:id="@+id/readingToolbar"
             android:background="@color/colorPrimary"
             >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+                <ImageView
+                    android:layout_width="@dimen/list_item_avatar_size"
+                    android:layout_height="@dimen/list_item_avatar_size"
+                    android:src="@mipmap/ic_launcher"
+                    android:layout_marginRight="@dimen/default_padding"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/profile_nickname_size"/>
+            </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
         <ScrollView
@@ -34,50 +52,71 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/read_tv_username"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:layout_margin="@dimen/default_padding">
+
+                    <com.yoon.memoria.Custom.CircleImageView
+                        android:layout_width="@dimen/profile_avatar_mini_size"
+                        android:layout_height="@dimen/profile_avatar_mini_size"
+                        android:id="@+id/read_profile"/>
+
+                    <TextView
+                        android:id="@+id/read_tv_username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/default_padding"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/title_nickname_size"
+                        android:textColor="@color/black"/>
+
+                </LinearLayout>
 
                 <ImageView
                     android:id="@+id/read_image"
-                    android:layout_width="260dp"
-                    android:layout_height="260dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_margin="10dp"
+                    android:layout_margin="@dimen/default_padding"
                     android:background="#000000" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_margin="@dimen/default_padding">
 
                     <Button
                         android:id="@+id/read_btn_like"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_width="@dimen/like_button_size"
+                        android:layout_height="@dimen/like_button_size" />
 
                     <TextView
                         android:id="@+id/read_tv_Like"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp" />
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/default_padding"
+                        android:textColor="@color/black"/>
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/read_tv_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:visibility="visible" />
+                    android:layout_margin="@dimen/default_padding"
+                    android:visibility="visible"
+                    android:textSize="@dimen/default_textSize"
+                    android:textColor="@color/black"/>
 
                 <EditText
                     android:id="@+id/read_et_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_margin="@dimen/default_padding"
                     android:visibility="gone" />
 
                 <Button
@@ -85,7 +124,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_margin="10dp"
+                    android:background="@drawable/custom_button"
+                    android:layout_margin="@dimen/default_padding"
                     android:text="수정하기"
                     android:visibility="gone" />
 

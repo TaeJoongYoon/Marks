@@ -243,14 +243,14 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         binding.mapToolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.menu_map:
+                    postLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                     if(postLocation == null)
                         Util.makeToast(getActivity(),"위치가 확인되지 않습니다");
                     else {
-                        postLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                         Intent intent = new Intent(getActivity(), PostingActivity.class);
                         intent.putExtra("latitude", postLocation.getLatitude());
                         intent.putExtra("longitude", postLocation.getLongitude());
-                        //getActivity().startActivityForResult(intent, 1);
+                        getActivity().startActivityForResult(intent, 1);
                     }
                     break;
             }
@@ -266,13 +266,23 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                Util.makeToast(getActivity(),"글쓰기 성공");
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                Util.makeToast(getActivity(),"글쓰기 실패");
-            }
+        switch (requestCode){
+            case 1:
+                if(resultCode == Activity.RESULT_OK){
+                    Util.makeToast(getActivity(),"글쓰기 성공");
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Util.makeToast(getActivity(),"글쓰기 실패");
+                }
+                break;
+            case GPS_ENABLE_REQUEST_CODE:
+                if (checkLocationServicesStatus()) {
+                    if ( googleApiClient.isConnected() == false ) {
+                        googleApiClient.connect();
+                    }
+                    return;
+                }
+                break;
         }
     }
 
@@ -401,19 +411,23 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
             showDialogForLocation();
         }
 
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if ( ActivityCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        else{
+            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if ( ActivityCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+                    LocationServices.FusedLocationApi
+                            .requestLocationUpdates(googleApiClient, locationRequest, this);
+                    googleMap.setMyLocationEnabled(true);
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                }
+            } else {
                 LocationServices.FusedLocationApi
                         .requestLocationUpdates(googleApiClient, locationRequest, this);
+                googleMap.setMyLocationEnabled(true);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             }
-        } else {
-            LocationServices.FusedLocationApi
-                    .requestLocationUpdates(googleApiClient, locationRequest, this);
         }
-        googleMap.setMyLocationEnabled(true);
-        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
     public void showDialogForLocation(){

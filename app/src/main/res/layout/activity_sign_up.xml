@@ -24,19 +24,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/default_padding">
 
                 <TextView
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="E_MAIL" />
+                    android:text="E_MAIL"
+                    android:textColor="@color/black"/>
 
                 <EditText
                     android:id="@+id/signup_et_ID"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="이메일을 입력해주세요"
-                    android:textSize="14dp"
+                    android:textSize="@dimen/default_textSize"
                     android:inputType="textEmailAddress"/>
             </LinearLayout>
 
@@ -44,19 +45,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/default_padding">
 
                 <TextView
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="NICK\nNAME" />
+                    android:text="NICK\nNAME"
+                    android:textColor="@color/black"/>
 
                 <EditText
                     android:id="@+id/signup_et_NAME"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="별명을 입력해주세요(2 ~ 8글자)"
-                    android:textSize="14dp"
+                    android:textSize="@dimen/default_textSize"
                     android:inputType="text"/>
             </LinearLayout>
 
@@ -64,18 +66,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/default_padding">
 
                 <TextView
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="PW" />
+                    android:text="PW"
+                    android:textColor="@color/black"/>
 
                 <EditText
                     android:id="@+id/signup_et_PW"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="14dp"
+                    android:textSize="@dimen/default_textSize"
                     android:hint="비밀번호를 입력해주세요(최소 8글자)"
                     android:inputType="textPassword"/>
             </LinearLayout>
@@ -84,12 +87,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/default_padding">
 
                 <TextView
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:text="PW" />
+                    android:text="PW"
+                    android:textColor="@color/black"/>
 
                 <EditText
                     android:id="@+id/signup_et_PW2"
@@ -104,12 +108,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="@dimen/default_padding">
 
                 <Button
                     android:id="@+id/signup_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/custom_button"
                     android:text="회원가입" />
             </LinearLayout>
         </LinearLayout>

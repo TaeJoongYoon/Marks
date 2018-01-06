@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_padding">12dp</dimen>
+    <dimen name="list_item_avatar_size">40dp</dimen>
+    <dimen name="list_item_text_margin">3dp</dimen>
+    <dimen name="like_button_size">40dp</dimen>
+    <dimen name="profile_avatar_size">80dp</dimen>
+    <dimen name="profile_avatar_mini_size">60dp</dimen>
+    <dimen name="profile_follow_progress_size">24dp</dimen>
+    <dimen name="profile_follow_button_height">36dp</dimen>
+    <dimen name="profile_nickname_size">20sp</dimen>
+    <dimen name="title_nickname_size">16sp</dimen>
+    <dimen name="default_textSize">14sp</dimen>
+</resources>
