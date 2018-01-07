@@ -12,16 +12,19 @@ import java.util.Map;
 
 public class User {
 
-    private String nickname;
-    private String imgUri;
-    private int followingCount = 0;
-    private Map<String, Boolean> following = new HashMap<>();
-    private int followerCount = 0;
-    private Map<String, Boolean> follower = new HashMap<>();
+    private String Uid;
+    String nickname;
+    String imgUri;
+    String filename;
+    int followingCount = 0;
+    Map<String, Boolean> following = new HashMap<>();
+    int followerCount = 0;
+    Map<String, Boolean> follower = new HashMap<>();
 
     public User(){}
 
-    public User(String nickname,String imgUri){
+    public User(String Uid, String nickname,String imgUri){
+        this.Uid = Uid;
         this.nickname = nickname;
         this.imgUri = imgUri;
     }
@@ -29,13 +32,24 @@ public class User {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("Uid",Uid);
         result.put("nickname", nickname);
+        result.put("imgUri",imgUri);
+        result.put("filename",filename);
         result.put("followingCount", followingCount);
         result.put("following",following);
         result.put("followerCount",followerCount);
         result.put("follower",follower);
 
         return result;
+    }
+
+    public String getUid() {
+        return Uid;
+    }
+
+    public void setUid(String uid) {
+        Uid = uid;
     }
 
     public String getNickname() {
@@ -84,5 +98,13 @@ public class User {
 
     public void setImgUri(String imgUri) {
         this.imgUri = imgUri;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

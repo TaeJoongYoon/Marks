@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -106,13 +107,9 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
 
-                if (user.getImgUri().equals("NULL"))
-                    binding.readProfile.setImageResource(R.drawable.ic_face_black_48dp);
-                else
-                    storageSingleton.getStorageReference().child(user.getImgUri()).getDownloadUrl().addOnSuccessListener(
-                            uri -> profileSetting(uri)
-                    );
+                Util.loadImage(binding.readProfile,user.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
                 binding.readTvUsername.setText(user.getNickname());
+                binding.readProgress.setVisibility(View.GONE);
             }
 
             @Override
@@ -120,29 +117,11 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
             }
         });
-        String filename = post.getFilename();
-        storageSingleton.getStorageReference().child(filename).getDownloadUrl().addOnSuccessListener(
-                uri -> UIsetting(uri)
-        );
-    }
-
-    public void profileSetting(Uri uri){
-        Glide.with(this)
-                .load(uri)
-                .centerCrop()
-                .into(binding.readProfile);
-    }
-
-    public void UIsetting(Uri uri){
-        Glide.with(this)
-                .load(uri)
-                .into(binding.readImage);
-
+        Util.loadImage(binding.readImage,post.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
         binding.readTvLike.setText(""+post.getLikeCount());
-
         binding.readTvContent.setText(post.getContent());
-        binding.readProgress.setVisibility(View.GONE);
     }
+
 
     public void onStarClicked(DatabaseReference postRef) {
         postRef.runTransaction(new Transaction.Handler() {
@@ -209,7 +188,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                 binding.readEtContent.setVisibility(View.VISIBLE);
                 binding.readBtnEdit.setVisibility(View.VISIBLE);
                 binding.readEtContent.setText(temp);
-                return true;
+                break;
             case R.id.read_delete:
                 databaseReference.child("posts").child(postUid).removeValue();
                 databaseReference.child("users").child(getUid()).child("posts").child(postUid).removeValue();

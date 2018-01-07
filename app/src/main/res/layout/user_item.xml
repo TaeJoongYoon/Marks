@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="post"
+            type="com.yoon.memoria.Model.Post">
+
+        </variable>
+    </data>
+    <RelativeLayout
+        android:layout_width="@dimen/list_photo_size"
+        android:layout_height="@dimen/list_photo_size">
+    
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/post_images"
+            app:error="@{@drawable/ic_face_black_48dp}"
+            app:imageUrl="@{post.imgUri}" />
+    </RelativeLayout>
+</layout>

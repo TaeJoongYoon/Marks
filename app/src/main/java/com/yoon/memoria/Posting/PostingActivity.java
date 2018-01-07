@@ -36,6 +36,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     private Intent intent;
 
     private String uid;
+    private String imgUri;
     private String filename;
     private String content;
     private double latitude;
@@ -131,11 +132,12 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     }
 
     @Override
-    public void success() {
+    public void success(Uri uri) {
+        imgUri = uri.toString();
         filename = presenter.getFilename();
         content = binding.postEdit.getText().toString();
         progressDialog.dismiss();
-        presenter.post_to_firebase(uid,date,latitude,longitude,filename,content);
+        presenter.post_to_firebase(uid,date,latitude,longitude, imgUri, filename,content);
     }
 
     @Override

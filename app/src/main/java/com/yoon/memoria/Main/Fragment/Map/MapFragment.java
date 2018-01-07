@@ -475,7 +475,10 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onLocationChanged(Location location) {
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
         Log.i(TAG, "onLocationChanged call..");
-        searchCurrentPlaces();
+        if(location != null)
+            searchCurrentPlaces();
+        else
+            startLocationUpdates();
     }
 
     private void searchCurrentPlaces() {

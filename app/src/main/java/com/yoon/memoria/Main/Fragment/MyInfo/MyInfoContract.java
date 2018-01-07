@@ -25,7 +25,7 @@ public class MyInfoContract {
         Presenter getPresenter();
         Context getAct();
         void nicknameEdit(EditText editText);
-        void success();
+        void success(Uri uri);
         void failed();
     }
 
@@ -34,7 +34,8 @@ public class MyInfoContract {
         void eventSetting(DatabaseReference databaseReference, List<String> event);
         Intent toHistory(CalendarDay date, Activity activity);
         void show();
-        void profile_to_firebase(String filename);
+        void profile_to_firebase(String imgUri, String filename);
         void fileUpload(Uri filePath);
+        String getFilename();
     }
 }

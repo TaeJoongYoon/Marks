@@ -39,11 +39,11 @@ public class PostingPresenter implements PostingContract.Presenter {
 
 
     @Override
-    public void post_to_firebase(String uid, String date, double latitude, double longitude, String filename, String content) {
+    public void post_to_firebase(String uid, String date, double latitude, double longitude,String imgUri, String filename, String content) {
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
         String KEY = firebaseDatabase.child("posts").push().getKey();
-        post = new Post(uid,date,latitude,longitude,filename,content);
+        post = new Post(uid,KEY,date,latitude,longitude,imgUri, filename,content);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -67,7 +67,7 @@ public class PostingPresenter implements PostingContract.Presenter {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        view.success();
+                        view.success(taskSnapshot.getDownloadUrl());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -88,11 +88,11 @@ public class PostingPresenter implements PostingContract.Presenter {
 
     }
 
-    public String getFilename(){
-        return filename;
-    }
-
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
+
+    public String getFilename(){
+        return filename;
     }
 }

@@ -12,22 +12,26 @@ import java.util.Map;
 
 public class Post {
 
-    private String uid;
-    private String date;
-    private double latitude;
-    private double longitude;
-    private String filename;
-    private String content;
-    private int likeCount = 0;
-    private Map<String ,Boolean> likes = new HashMap<String, Boolean>();
+    String uid;
+    String postUid;
+    String date;
+    double latitude;
+    double longitude;
+    String imgUri;
+    String filename;
+    String content;
+    int likeCount = 0;
+    Map<String ,Boolean> likes = new HashMap<String, Boolean>();
 
     public Post() {}
 
-    public Post(String uid, String date, double latitude, double longitude, String filename, String content){
+    public Post(String uid, String postUid, String date, double latitude, double longitude, String imgUri, String filename, String content){
         this.uid = uid;
+        this.postUid = postUid;
         this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.imgUri = imgUri;
         this.filename  = filename;
         this.content = content;
     }
@@ -36,9 +40,11 @@ public class Post {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid",uid);
+        result.put("postUid",postUid);
         result.put("date",date);
         result.put("latitude",latitude);
         result.put("longitude",longitude);
+        result.put("imgUri",imgUri);
         result.put("filename",filename);
         result.put("content",content);
         result.put("likeCount",likeCount);
@@ -109,5 +115,21 @@ public class Post {
 
     public void setLikes(Map<String, Boolean> likes) {
         this.likes = likes;
+    }
+
+    public String getPostUid() {
+        return postUid;
+    }
+
+    public void setPostUid(String postUid) {
+        this.postUid = postUid;
+    }
+
+    public String getImgUri() {
+        return imgUri;
+    }
+
+    public void setImgUri(String imgUri) {
+        this.imgUri = imgUri;
     }
 }

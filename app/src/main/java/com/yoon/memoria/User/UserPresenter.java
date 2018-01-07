@@ -1,11 +1,16 @@
 package com.yoon.memoria.User;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Model.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Yoon on 2018-01-02.
@@ -19,7 +24,7 @@ public class UserPresenter implements UserContract.Presenter {
     }
 
     @Override
-    public void onFollowed(DatabaseReference postRef, String follow) {
+    public void onFollowed(DatabaseReference postRef, DataSnapshot followRef, DatabaseReference databaseReference) {
         postRef.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -30,13 +35,13 @@ public class UserPresenter implements UserContract.Presenter {
                 }
 
 
-                if (user.getFollowing().containsKey(follow)) {
+                if (user.getFollowing().containsKey(followRef.getKey())) {
                     user.setFollowingCount(user.getFollowingCount()-1);
-                    user.getFollowing().remove(follow);
+                    user.getFollowing().remove(followRef.getKey());
 
                 } else {
                     user.setFollowingCount(user.getFollowingCount()+1);
-                    user.getFollowing().put(follow, true);
+                    user.getFollowing().put(followRef.getKey(), true);
                 }
 
                 mutableData.setValue(user);
@@ -50,4 +55,7 @@ public class UserPresenter implements UserContract.Presenter {
         });
     }
 
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
 }

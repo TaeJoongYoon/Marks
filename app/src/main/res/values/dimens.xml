@@ -3,6 +3,7 @@
     <dimen name="default_padding">12dp</dimen>
     <dimen name="list_item_avatar_size">40dp</dimen>
     <dimen name="list_item_text_margin">3dp</dimen>
+    <dimen name="list_photo_size">120dp</dimen>
     <dimen name="like_button_size">40dp</dimen>
     <dimen name="profile_avatar_size">80dp</dimen>
     <dimen name="profile_avatar_mini_size">60dp</dimen>

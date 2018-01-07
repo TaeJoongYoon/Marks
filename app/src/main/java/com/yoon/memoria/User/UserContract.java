@@ -1,5 +1,6 @@
 package com.yoon.memoria.User;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 /**
@@ -12,6 +13,6 @@ public class UserContract {
     }
 
     interface Presenter{
-       void onFollowed(DatabaseReference postRef, String follow);
+        void onFollowed(DatabaseReference postRef, DataSnapshot followRef, DatabaseReference databaseReference);
     }
 }

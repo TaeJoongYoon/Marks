@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class Place {
 
-    private String date;
-    private String placeName;
-    private String placeID;
-    private String detail;
+    String date;
+    String placeName;
+    String placeID;
+    String detail;
 
     public Place(){}
 

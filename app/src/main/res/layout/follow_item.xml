@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="user"
+            type="com.yoon.memoria.Model.User">
+
+        </variable>
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/default_padding">
+
+        <com.yoon.memoria.Custom.CircleImageView
+            android:layout_width="@dimen/list_item_avatar_size"
+            android:layout_height="@dimen/list_item_avatar_size"
+            android:id="@+id/follow_profile"
+            app:error="@{@drawable/ic_face_black_48dp}"
+            app:imageUrl="@{user.imgUri}" />
+
+        <TextView
+            android:id="@+id/follow_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/default_textSize"
+            android:layout_marginLeft="@dimen/default_padding"
+            android:text="@{user.nickname}"
+            />
+
+    </LinearLayout>
+</layout>
+

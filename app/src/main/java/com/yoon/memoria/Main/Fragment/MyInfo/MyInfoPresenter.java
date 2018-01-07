@@ -132,10 +132,12 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
     }
 
     @Override
-    public void profile_to_firebase(String filename) {
+    public void profile_to_firebase(String imgUri, String filename) {
         DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
-        firebaseDatabase.child("users").child(getUid()).child("imgUri").setValue(filename);
+
+        firebaseDatabase.child("users").child(getUid()).child("imgUri").setValue(imgUri);
+        firebaseDatabase.child("users").child(getUid()).child("filename").setValue(filename);
     }
 
     public void fileUpload(Uri filePath) {
@@ -150,7 +152,7 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        view.success();
+                        view.success(taskSnapshot.getDownloadUrl());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -171,6 +173,7 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
+    @Override
     public String getFilename(){
         return filename;
     }
