@@ -37,7 +37,9 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
+import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.FollowList.FollowListActivity;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.EventDecorator;
 import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.OneDayDecorator;
@@ -74,9 +76,7 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     private User user;
     private String imgUri;
     private String filename;
-    private Uri mImageCaptureUri;
     private final int GALLERY_CODE = 1112;
-    private final int CROP_IMAGE = 1113;
 
     public MyInfoFragment() {
         presenter = new MyInfoPresenter(this);
@@ -205,6 +205,10 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         return getActivity();
     }
 
+    @Subscribe
+    public void onActivityResultEvent(@NonNull ActivityResultEvent event) {
+        onActivityResult(event.getRequestCode(), event.getResultCode(), event.getData());
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK)
@@ -213,27 +217,14 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
             switch (requestCode){
                 case GALLERY_CODE:
 
-                    mImageCaptureUri = data.getData();
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(mImageCaptureUri, "image/*");
-
-                    intent.putExtra("outputX", Util.dpToPixel(getActivity(),120)); // CROP한 이미지의 x축 크기
-                    intent.putExtra("outputY", Util.dpToPixel(getActivity(),120)); // CROP한 이미지의 y축 크기
-                    intent.putExtra("aspectX", 1); // CROP 박스의 X축 비율
-                    intent.putExtra("aspectY", 1); // CROP 박스의 Y축 비율
-                    intent.putExtra("scale", true);
-                    intent.putExtra("return-data", true);
-                    startActivityForResult(intent, CROP_IMAGE);
-
-                    break;
-                case CROP_IMAGE:
-
-                    final Bundle extras = data.getExtras();
-                    Bitmap bitmap = extras.getParcelable("data");
-
-                    Uri uri = getImageUri(getActivity(), bitmap);
-                    presenter.fileUpload(uri);
-
+                    Uri uri = data.getData();
+                    String filePath = getRealPathFromURIPath(uri, getActivity());
+                    File file = new File(filePath);
+                    if(file.length()>5*2E20){
+                        Util.makeToast(getActivity(),"이미지 크기는 최대 5MB 입니다");
+                    }else {
+                        presenter.fileUpload(uri);
+                    }
                     break;
             }
         }
@@ -258,11 +249,16 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         Util.makeToast(getActivity(),"사진수정 실패!");
     }
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
+
+    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
+        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            return contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(idx);
+        }
     }
 
     @Override

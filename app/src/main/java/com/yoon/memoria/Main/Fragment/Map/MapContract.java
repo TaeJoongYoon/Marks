@@ -2,6 +2,7 @@ package com.yoon.memoria.Main.Fragment.Map;
 
 import android.location.Location;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -19,13 +20,14 @@ public class MapContract {
 
     interface View{
         Presenter getPresenter();
+        String getPreviousPlace();
+        void setPreviousPlace(String place);
     }
 
     public interface Presenter{
         void markerAdd(GoogleMap googleMap, DataSnapshot dataSnapshot, List<Marker> markers);
-        void markerRemove(GoogleMap googleMap, DataSnapshot dataSnapshot, List<Marker> markers);
         MarkerOptions setSearchLocation(Location location, String markerTitle, String markerSnippet);
         void setCurrentLocation(GoogleMap googleMap, LatLng DEFAULT_LOCATION, Location location);
-        void setCurrentPlace(DatabaseReference databaseReference, String name, String ID);
+        void searchCurrentPlaces(GoogleApiClient googleApiClient, DatabaseReference databaseReference);
     }
 }

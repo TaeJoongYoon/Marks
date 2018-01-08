@@ -52,9 +52,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.BusProvider;
+import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Posting.PostingActivity;
 import com.yoon.memoria.R;
 import com.yoon.memoria.Reading.ReadingActivity;
@@ -69,7 +71,7 @@ import static android.content.ContentValues.TAG;
 
 
 public class MapFragment extends Fragment implements MapContract.View, OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener{
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ValueEventListener{
 
     private FragmentMapBinding binding;
     private DatabaseReference databaseReference;
@@ -89,9 +91,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private Location postLocation = null;
     private List<Marker> markers = new ArrayList<>(0);
 
-    private final static int MAXENTRIES = 5;
-    private String[] LikelyPlaceNames = null;
-    private String[] LikelyPlaceIDs = null;
     private String previousPlace = null;
 
     private CameraPosition mCameraPosition;
@@ -100,10 +99,9 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    private LocationRequest locationRequest = new LocationRequest()
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-            .setInterval(UPDATE_INTERVAL_MS)
-            .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
+    private LocationRequest locationRequest = new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                                                                   .setInterval(UPDATE_INTERVAL_MS)
+                                                                   .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
 
     public MapFragment() {
         presenter = new MapPresenter(this);
@@ -112,14 +110,9 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-        }
 
         buildGoogleApiClient();
         BusProvider.getInstance().register(this);
-
         databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
@@ -130,6 +123,8 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         setHasOptionsMenu(true);
 
         binding.map.getMapAsync(this);
+
+        databaseReference.child("posts").addValueEventListener(this);
         initGoogleSearch();
         return binding.getRoot();
     }
@@ -142,45 +137,15 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
         if (binding.map != null)
             binding.map.onCreate(savedInstanceState);
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
         binding.map.onStart();
-
-        if(googleApiClient != null && googleApiClient.isConnected() == false) {
+        if(googleApiClient != null && !googleApiClient.isConnected()){
             googleApiClient.connect();
         }
-
-        databaseReference.child("posts").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                presenter.markerAdd(googleMap,dataSnapshot,markers);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                presenter.markerRemove(googleMap,dataSnapshot,markers);
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
     }
 
     @Override
@@ -203,6 +168,10 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     @Override
     public void onDestroyView() {
+        if ( googleApiClient.isConnected()) {
+            googleApiClient.disconnect();
+            databaseReference.child("posts").removeEventListener(this);
+        }
         BusProvider.getInstance().unregister(this);
         super.onDestroyView();
     }
@@ -226,15 +195,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onDestroy() {
         super.onDestroy();
         binding.map.onDestroy();
-        if ( googleApiClient != null ) {
-            googleApiClient.unregisterConnectionCallbacks(this);
-            googleApiClient.unregisterConnectionFailedListener(this);
-
-            if ( googleApiClient.isConnected()) {
-                LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-                googleApiClient.disconnect();
-            }
-        }
     }
 
     @SuppressLint("MissingPermission")
@@ -277,9 +237,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 }
                 break;
             case GPS_ENABLE_REQUEST_CODE:
-                System.out.println("화면 복귀");
                 if (checkLocationServicesStatus()) {
-                    System.out.println("위치설정 확인");
                     if (!googleApiClient.isConnected()) {
                         googleApiClient.connect();
                     }
@@ -328,6 +286,16 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         return presenter;
     }
 
+    @Override
+    public String getPreviousPlace() {
+        return previousPlace;
+    }
+
+    @Override
+    public void setPreviousPlace(String place) {
+        this.previousPlace = place;
+    }
+
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -335,47 +303,26 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION, null);
         updateLocaionUI();
-
         getDeviceLocation();
     }
 
 
-    @SuppressLint("MissingPermission")
     public void updateLocaionUI(){
-        TedRx2Permission.with(getActivity())
-                .setRationaleTitle(R.string.rationale_title)
-                .setRationaleMessage(R.string.rationale_location_message)
-                .setDeniedMessage(R.string.rationale_denied_message)
-                .setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
-                .request()
-                .subscribe(tedPermissionResult -> {
-                    if (tedPermissionResult.isGranted()) {
-                        googleMap.setMyLocationEnabled(true);
-                        googleMap.getUiSettings().setCompassEnabled(true);
-                        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-                        googleMap.setOnMarkerClickListener(marker -> {
-                            if (marker.getSnippet().equals("POST"))
-                                toReading(marker);
-                            return true;
-                        });
-                        googleMap.setOnMapClickListener(latLng -> {
-                            if(currentMarker != null)
-                                currentMarker.remove();
-                        });
-                        Util.makeToast(getActivity(), "권한 승인");
-                    } else {
-                        Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
-                    }
-                }, throwable -> {
-                }, () -> {
-                });
+        googleMap.getUiSettings().setCompassEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.setOnMarkerClickListener(marker -> {
+            if (marker.getSnippet().equals("POST"))
+                toReading(marker);
+            return true;
+        });
+        googleMap.setOnMapClickListener(latLng -> {
+            if(currentMarker != null)
+                currentMarker.remove();
+        });
     }
 
     @SuppressLint("MissingPermission")
     public void getDeviceLocation(){
-        if (!googleApiClient.isConnected()) {
-            googleApiClient.connect();
-        }
         mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (mCameraPosition != null) {
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
@@ -384,7 +331,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                     new LatLng(mLastKnownLocation.getLatitude(),
                             mLastKnownLocation.getLongitude()), 15));
         } else {
-            Log.d(TAG, "Current location is null. Using defaults.");
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15));
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
@@ -406,32 +352,50 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        startLocationUpdates();
+        TedRx2Permission.with(getActivity())
+                .setRationaleTitle(R.string.rationale_title)
+                .setRationaleMessage(R.string.rationale_location_message)
+                .setDeniedMessage(R.string.rationale_denied_message)
+                .setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+                .request()
+                .subscribe(tedPermissionResult -> {
+                    if (tedPermissionResult.isGranted()) {
+                        startLocationUpdates();
+                        googleMap.setMyLocationEnabled(true);
+                    } else {
+                        Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
+                    }
+                }, throwable -> {
+                }, () -> {
+                });
     }
 
+    @SuppressLint("MissingPermission")
     public void startLocationUpdates(){
         if ( !checkLocationServicesStatus()) {
             showDialogForLocation();
         }
 
         else{
-            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if ( ActivityCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-                    LocationServices.FusedLocationApi
-                            .requestLocationUpdates(googleApiClient, locationRequest, this);
-                    googleMap.setMyLocationEnabled(true);
-                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-                }
-            } else {
-                LocationServices.FusedLocationApi
-                        .requestLocationUpdates(googleApiClient, locationRequest, this);
-                googleMap.setMyLocationEnabled(true);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            }
+            TedRx2Permission.with(getActivity())
+                    .setRationaleTitle(R.string.rationale_title)
+                    .setRationaleMessage(R.string.rationale_location_message)
+                    .setDeniedMessage(R.string.rationale_denied_message)
+                    .setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+                    .request()
+                    .subscribe(tedPermissionResult -> {
+                        if (tedPermissionResult.isGranted()) {
+                            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+                            googleMap.setMyLocationEnabled(true);
+                        } else {
+                            Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
+                        }
+                    }, throwable -> {
+                    }, () -> {
+                    });
         }
     }
 
@@ -479,45 +443,21 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void onLocationChanged(Location location) {
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
-        Log.i(TAG, "onLocationChanged call..");
         if(location != null)
-            searchCurrentPlaces();
-        else
-            startLocationUpdates();
+            presenter.searchCurrentPlaces(googleApiClient,databaseReference);
+        Log.i(TAG, "onLocationChanged call..");
     }
 
-    private void searchCurrentPlaces() {
-        @SuppressWarnings("MissingPermission")
-        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                .getCurrentPlace(googleApiClient, null);
-        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>(){
-
-            @Override
-            public void onResult(@NonNull PlaceLikelihoodBuffer placeLikelihoods) {
-                int i = 0;
-                LikelyPlaceNames = new String[MAXENTRIES];
-                LikelyPlaceIDs = new String[MAXENTRIES];
-
-                for(PlaceLikelihood placeLikelihood : placeLikelihoods) {
-                    LikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
-                    LikelyPlaceIDs[i] = (String) placeLikelihood.getPlace().getId();
-
-                    i++;
-                    if(i > MAXENTRIES - 1 ) {
-                        break;
-                    }
-                }
-
-                placeLikelihoods.release();
-
-                if (LikelyPlaceNames[0].equals(previousPlace)){
-                    presenter.setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0]);
-                    previousPlace = null;
-                }
-                else
-                    previousPlace = LikelyPlaceNames[0];
-            }
-        });
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        googleMap.clear();
+        markers.clear();
+        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+            presenter.markerAdd(googleMap,snapshot,markers);
+        }
+    }
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
 
     }
 }

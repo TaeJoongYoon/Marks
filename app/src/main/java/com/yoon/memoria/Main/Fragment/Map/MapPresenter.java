@@ -1,7 +1,15 @@
 package com.yoon.memoria.Main.Fragment.Map;
 
 import android.location.Location;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -25,12 +33,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
+
 /**
  * Created by Yoon on 2017-11-10.
  */
 
 public class MapPresenter implements MapContract.Presenter {
+
     private MapContract.View view;
+    private final static int MAXENTRIES = 5;
+    private String[] LikelyPlaceNames = null;
+    private String[] LikelyPlaceIDs = null;
 
     public MapPresenter(MapContract.View view){
         this.view = view;
@@ -45,20 +59,8 @@ public class MapPresenter implements MapContract.Presenter {
         markerOptions.position(latLng);
         markerOptions.title(dataSnapshot.getKey());
         markerOptions.snippet("POST");
-        if(googleMap==null)
-            System.out.println("CCC");
         Marker marker = googleMap.addMarker(markerOptions);
         markers.add(marker);
-    }
-
-    @Override
-    public void markerRemove(GoogleMap googleMap, DataSnapshot dataSnapshot, List<Marker> markers) {
-        Post post = dataSnapshot.getValue(Post.class);
-
-        for (Marker marker : markers){
-            if(marker.getTitle().equals(post.getUid()))
-                marker.remove();
-        }
     }
 
     @Override
@@ -91,7 +93,42 @@ public class MapPresenter implements MapContract.Presenter {
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
-    @Override
+    public void searchCurrentPlaces(GoogleApiClient googleApiClient,DatabaseReference databaseReference) {
+        @SuppressWarnings("MissingPermission")
+        PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                .getCurrentPlace(googleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>(){
+
+            @Override
+            public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
+                int i = 0;
+                LikelyPlaceNames = new String[MAXENTRIES];
+                LikelyPlaceIDs = new String[MAXENTRIES];
+
+                for(PlaceLikelihood placeLikelihood : placeLikelihoods) {
+                    LikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
+                    LikelyPlaceIDs[i] = (String) placeLikelihood.getPlace().getId();
+
+                    i++;
+                    if(i > MAXENTRIES - 1 ) {
+                        break;
+                    }
+                }
+
+                placeLikelihoods.release();
+
+
+                if (LikelyPlaceNames[0].equals(view.getPreviousPlace())){
+                    setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0]);
+                    view.setPreviousPlace(null);
+                }
+                else
+                    view.setPreviousPlace(LikelyPlaceNames[0]);
+
+            }
+        });
+    }
+
     public void setCurrentPlace(DatabaseReference databaseReference, String name, String ID) {
         Date now = new Date();
 
