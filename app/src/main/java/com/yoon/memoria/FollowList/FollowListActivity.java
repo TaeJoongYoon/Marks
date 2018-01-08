@@ -40,6 +40,8 @@ public class FollowListActivity extends AppCompatActivity implements FollowListC
     private String follow_tag;
     private String Uid;
 
+    private int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,11 +61,11 @@ public class FollowListActivity extends AppCompatActivity implements FollowListC
         following =intent.getStringExtra("following");
         if(follower != null) {
             binding.followName.setText(follower);
-            follow_tag = "followers";
+            follow_tag = "follower";
         }
         if(following != null) {
             binding.followName.setText(following);
-            follow_tag = "followings";
+            follow_tag = "following";
         }
         Uid = intent.getStringExtra("Uid");
     }
@@ -88,10 +90,23 @@ public class FollowListActivity extends AppCompatActivity implements FollowListC
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<User> users = new ArrayList<>();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-                    users.add(user);
+                    count++;
+                    String uid = snapshot.getKey();
+                    databaseReference.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            users.add(user);
+                            if(count == users.size())
+                                adapter.addItems(users);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-                adapter.addItems(users);
             }
 
             @Override

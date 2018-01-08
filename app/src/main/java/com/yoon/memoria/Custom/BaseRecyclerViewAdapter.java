@@ -67,10 +67,7 @@ public abstract class BaseRecyclerViewAdapter<T, H extends RecyclerView.ViewHold
         } else {
             this.arrayList.addAll(items);
         }
-
         notifyDataSetChanged();
-
-
     }
 
     public void clearItems() {

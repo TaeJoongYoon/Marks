@@ -150,8 +150,9 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         super.onStart();
         binding.map.onStart();
 
-        if(googleApiClient != null && googleApiClient.isConnected() == false)
+        if(googleApiClient != null && googleApiClient.isConnected() == false) {
             googleApiClient.connect();
+        }
 
         databaseReference.child("posts").addChildEventListener(new ChildEventListener() {
             @Override
@@ -276,8 +277,10 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 }
                 break;
             case GPS_ENABLE_REQUEST_CODE:
+                System.out.println("화면 복귀");
                 if (checkLocationServicesStatus()) {
-                    if ( googleApiClient.isConnected() == false ) {
+                    System.out.println("위치설정 확인");
+                    if (!googleApiClient.isConnected()) {
                         googleApiClient.connect();
                     }
                     return;
@@ -330,7 +333,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION, null);
         updateLocaionUI();
 
@@ -371,6 +373,9 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     @SuppressLint("MissingPermission")
     public void getDeviceLocation(){
+        if (!googleApiClient.isConnected()) {
+            googleApiClient.connect();
+        }
         mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (mCameraPosition != null) {
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));

@@ -153,7 +153,8 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
                     user.getFollower().put(getUid(), true);
                 }
 
-                mutableData.setValue(user);
+                mutableData.child("follower").setValue(user.getFollower());
+                mutableData.child("followerCount").setValue(user.getFollowerCount());
                 return Transaction.success(mutableData);
             }
 

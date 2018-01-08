@@ -44,7 +44,9 @@ public class UserPresenter implements UserContract.Presenter {
                     user.getFollowing().put(followRef.getKey(), true);
                 }
 
-                mutableData.setValue(user);
+
+                mutableData.child("following").setValue(user.getFollowing());
+                mutableData.child("followingCount").setValue(user.getFollowingCount());
                 return Transaction.success(mutableData);
             }
 
