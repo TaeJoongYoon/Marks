@@ -22,6 +22,10 @@ public class MapContract {
         Presenter getPresenter();
         String getPreviousPlace();
         void setPreviousPlace(String place);
+        void setMyLocationEnabled();
+        void onConnected();
+        void onConnectionFailed();
+        void onLocationChanged(GoogleApiClient googleApiClient, Location location);
     }
 
     public interface Presenter{
@@ -29,5 +33,9 @@ public class MapContract {
         MarkerOptions setSearchLocation(Location location, String markerTitle, String markerSnippet);
         void setCurrentLocation(GoogleMap googleMap, LatLng DEFAULT_LOCATION, Location location);
         void searchCurrentPlaces(GoogleApiClient googleApiClient, DatabaseReference databaseReference);
+        void setMyLocationEnable();
+        void onConnected();
+        void onConnectionFailed();
+        void onLocationChanged(GoogleApiClient googleApiClient, Location location);
     }
 }

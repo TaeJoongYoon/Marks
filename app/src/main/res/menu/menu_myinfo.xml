@@ -12,6 +12,14 @@
                 android:title="별명 수정하기">
             </item>
             <item
+                android:id="@+id/myinfo_profile_edit"
+                android:title="사진 수정하기">
+            </item>
+            <item
+                android:id="@+id/myinfo_content_edit"
+                android:title="소개 수정하기">
+            </item>
+            <item
                 android:id="@+id/myinfo_logout"
                 android:title="로그아웃">
             </item>

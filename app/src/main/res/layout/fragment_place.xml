@@ -13,27 +13,47 @@
             android:layout_height="wrap_content"
             android:id="@+id/placeToolbar"
             android:background="@color/colorPrimary"
+            android:layout_alignParentTop="true"
             >
             <ImageView
                 android:layout_width="@dimen/list_item_avatar_size"
                 android:layout_height="@dimen/list_item_avatar_size"
                 android:src="@mipmap/ic_launcher"
                 android:layout_marginRight="@dimen/default_padding"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="@dimen/profile_nickname_size"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:text="@string/today_place"/>
         </android.support.v7.widget.Toolbar>
 
-        <RelativeLayout
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/placeToolbar"
+            android:id="@+id/text"
+            android:gravity="center_horizontal"
+            android:text="@string/place_comment"
+            android:layout_marginTop="@dimen/default_padding"
+            android:layout_marginBottom="@dimen/default_padding"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/place_recyclerview"
+            android:layout_below="@+id/text">
+        </android.support.v7.widget.RecyclerView>
+
+
+        <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/placeToolbar">
-
-        </RelativeLayout>
-
-        <Button
-            android:id="@+id/btn_quiz"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="QUIZ" />
+            android:id="@+id/fab"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_create_black_48dp"
+            android:layout_margin="@dimen/default_padding"/>
     </RelativeLayout>
 </layout>

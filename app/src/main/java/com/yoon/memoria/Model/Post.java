@@ -14,7 +14,6 @@ public class Post {
 
     String uid;
     String postUid;
-    String date;
     double latitude;
     double longitude;
     String imgUri;
@@ -25,10 +24,9 @@ public class Post {
 
     public Post() {}
 
-    public Post(String uid, String postUid, String date, double latitude, double longitude, String imgUri, String filename, String content){
+    public Post(String uid, String postUid, double latitude, double longitude, String imgUri, String filename, String content){
         this.uid = uid;
         this.postUid = postUid;
-        this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
         this.imgUri = imgUri;
@@ -41,7 +39,6 @@ public class Post {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid",uid);
         result.put("postUid",postUid);
-        result.put("date",date);
         result.put("latitude",latitude);
         result.put("longitude",longitude);
         result.put("imgUri",imgUri);
@@ -59,14 +56,6 @@ public class Post {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public double getLatitude() {

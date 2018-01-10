@@ -4,17 +4,35 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.view.MenuItem;
+import android.view.View;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.yoon.memoria.Main.Fragment.Place.PlaceRecyclerViewAdapter;
+import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.R;
+import com.yoon.memoria.UidSingleton;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.ActivityHistoryBinding;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class HistoryActivity extends AppCompatActivity implements HistoryContract.View {
+
+public class HistoryActivity extends AppCompatActivity implements ValueEventListener{
     private ActivityHistoryBinding binding;
-    private HistoryPresenter presenter;
+    private DatabaseReference databaseReference;
+    private UidSingleton uidSingleton = UidSingleton.getInstance();
+    private HistoryRecyclerViewAdapter adapter;
 
     private Intent intent;
+    private String date;
     private int YEAR;
     private int MONTH;
     private int DAY;
@@ -24,16 +42,62 @@ public class HistoryActivity extends AppCompatActivity implements HistoryContrac
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this,R.layout.activity_history);
         binding.setActivity(this);
-        init();
-        presenter = new HistoryPresenter(this);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        Util.makeToast(this,YEAR + "년" + MONTH + "월" + DAY + "일");
+        init();
+        initToolbar();
+        setRecyclerView();
     }
 
     public void init(){
         intent = getIntent();
         YEAR = intent.getIntExtra("year",2000);
-        MONTH = intent.getIntExtra("month",1);
+        MONTH = intent.getIntExtra("month",1) + 1;
         DAY = intent.getIntExtra("day",1);
+        date = YEAR + "-" + MONTH + "-" + DAY;
+
+        binding.historyDate.setText(YEAR + "년 " + MONTH + "월 " + DAY + "일");
+    }
+
+    public void initToolbar(){
+        setSupportActionBar(binding.historyToolbar);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_48dp);
+        getSupportActionBar().setTitle(null);
+    }
+
+    public void setRecyclerView(){
+        binding.historyToolbarRecyclerview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        adapter = new HistoryRecyclerViewAdapter(this);
+        binding.historyToolbarRecyclerview.setAdapter(adapter);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id)
+        {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        List<Place> places = new ArrayList<>(0);
+        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+            Place place = snapshot.getValue(Place.class);
+            places.add(place);
+        }
+        adapter.addItems(places);
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
     }
 }

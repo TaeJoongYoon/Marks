@@ -11,8 +11,7 @@
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryLight">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="280dp"
@@ -27,11 +26,10 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="@dimen/default_padding">
 
-                <TextView
+                <ImageView
                     android:layout_width="50dp"
-                    android:layout_height="match_parent"
-                    android:text="E-MAIL"
-                    android:textColor="@color/black"/>
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_face_black_48dp"/>
 
                 <EditText
                     android:layout_width="match_parent"
@@ -40,6 +38,7 @@
                     android:textSize="@dimen/default_textSize"
                     android:id="@+id/signin_et_ID"
                     android:inputType="textEmailAddress"
+                    android:maxLines="1"
                     />
             </LinearLayout>
 
@@ -49,33 +48,33 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="@dimen/default_padding">
 
-                <TextView
+                <ImageView
                     android:layout_width="50dp"
-                    android:layout_height="match_parent"
-                    android:text="PW"
-                    android:textColor="@color/black"/>
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_face_black_48dp"/>
 
                 <EditText
                     android:id="@+id/signin_et_PW"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="비밀번호를 입력해주세요(최소 8글자)"
+                    android:hint="비밀번호를 입력해주세요"
                     android:textSize="@dimen/default_textSize"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:maxLines="1"/>
             </LinearLayout>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_padding"
                 android:text="로그인"
+                android:textColor="@color/white"
                 android:id="@+id/signin_btn"
-                android:background="@drawable/custom_button"/>
+                android:background="@drawable/custom_button"
+                android:layout_marginBottom="@dimen/default_padding"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/signin_tv_signup"
-                android:layout_marginTop="@dimen/default_padding"
                 android:text="@string/request_sign_up"
                 android:textColor="#85000000"/>
             </LinearLayout>

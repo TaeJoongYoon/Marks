@@ -28,9 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FollowListActivity extends AppCompatActivity implements FollowListContract.View {
+public class FollowListActivity extends AppCompatActivity {
 
-    private FollowListPresenter presenter;
     private ActivityFollowListBinding binding;
     private DatabaseReference databaseReference;
 
@@ -40,14 +39,11 @@ public class FollowListActivity extends AppCompatActivity implements FollowListC
     private String follow_tag;
     private String Uid;
 
-    private int count = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this,R.layout.activity_follow_list);
         binding.setActivity(this);
-        presenter = new FollowListPresenter(this);
 
         init();
         initToolbar();
@@ -90,15 +86,13 @@ public class FollowListActivity extends AppCompatActivity implements FollowListC
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<User> users = new ArrayList<>();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    count++;
                     String uid = snapshot.getKey();
                     databaseReference.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User user = dataSnapshot.getValue(User.class);
-                            users.add(user);
-                            if(count == users.size())
-                                adapter.addItems(users);
+                            users.add(0,user);
+                            adapter.addItems(users);
                         }
 
                         @Override

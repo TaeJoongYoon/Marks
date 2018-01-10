@@ -37,7 +37,7 @@ public class SignUpPresenter implements SignUpContract.Presenter {
                         if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
 
-                            userModel = new User(user.getUid(),nickname,"NULL");
+                            userModel = new User(user.getUid(),nickname,"NULL", "내 소개입니다.");
 
                             databaseReference = FirebaseDatabase.getInstance().getReference();
                             databaseReference.child("users").child(user.getUid()).setValue(userModel);

@@ -1,5 +1,6 @@
 package com.yoon.memoria.User;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,7 @@ import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
 import com.yoon.memoria.R;
 import com.yoon.memoria.StorageSingleton;
+import com.yoon.memoria.UidSingleton;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.ActivityUserBinding;
 
@@ -41,6 +43,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     private ActivityUserBinding binding;
     private UserPresenter presenter;
     private DatabaseReference databaseReference;
+    private UidSingleton uidSingleton = UidSingleton.getInstance();
 
     private Intent intent;
     private String Uid;
@@ -54,6 +57,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
         binding.setActivity(this);
         presenter = new UserPresenter(this);
 
+        initToolbar();
         init();
         dataInput();
         setRecyclerView();
@@ -81,20 +85,21 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     }
 
     public void UISetting(){
-        initToolbar();
         binding.userNickname.setText(user.getNickname());
-
-        binding.userFollower.setText(""+user.getFollowerCount());
-        binding.userFollowing.setText(""+user.getFollowingCount());
+        binding.userProfileText.setText(user.getProfile());
+        binding.userFollower.setText("팔로워 "+user.getFollowerCount());
+        binding.userFollowing.setText("팔로잉 "+user.getFollowingCount());
 
         Util.loadImage(binding.userProfile,user.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
 
-        if (user.getFollower().containsKey(getUid())) {
+        if (user.getFollower().containsKey(uidSingleton.getUid())) {
             binding.userFollow.setBackgroundResource(R.drawable.followed);
             binding.userFollow.setText("따라가는 중");
+            binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
         } else {
             binding.userFollow.setBackgroundResource(R.drawable.custom_button);
             binding.userFollow.setText("따라가기");
+            binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.white));
         }
         binding.userFollow.setOnClickListener(this);
         binding.userFollower.setOnClickListener(this);
@@ -120,7 +125,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
                 List<Post> posts = new ArrayList<>(0);
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Post post = snapshot.getValue(Post.class);
-                    posts.add(post);
+                    posts.add(0, post);
                 }
                 adapter.addItems(posts);
             }
@@ -132,50 +137,22 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
         });
     }
 
-    private void onFollowClicked(DatabaseReference postRef) {
-        postRef.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                User user = mutableData.getValue(User.class);
+    @Override
+    public void onCompleted(DataSnapshot dataSnapshot){
+        User user = dataSnapshot.getValue(User.class);
+        binding.userFollower.setText("팔로워 "+user.getFollowerCount());
+        presenter.onFollowed(databaseReference.child("users").child(uidSingleton.getUid()), dataSnapshot, databaseReference);
 
-                if (user == null) {
-
-                    return Transaction.success(mutableData);
-                }
-
-
-                if (user.getFollower().containsKey(getUid())) {
-                    user.setFollowerCount(user.getFollowerCount()-1);
-                    user.getFollower().remove(getUid());
-
-                } else {
-                    user.setFollowerCount(user.getFollowerCount()+1);
-                    user.getFollower().put(getUid(), true);
-                }
-
-                mutableData.child("follower").setValue(user.getFollower());
-                mutableData.child("followerCount").setValue(user.getFollowerCount());
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b,
-                                   DataSnapshot dataSnapshot) {
-
-                User user = dataSnapshot.getValue(User.class);
-                binding.userFollower.setText(""+user.getFollowerCount());
-                presenter.onFollowed(databaseReference.child("users").child(getUid()), dataSnapshot, databaseReference);
-
-                if (user.getFollower().containsKey(getUid())) {
-                    binding.userFollow.setBackgroundResource(R.drawable.followed);
-                    binding.userFollow.setText("따라가는 중");
-                }
-                else {
-                    binding.userFollow.setBackgroundResource(R.drawable.custom_button);
-                    binding.userFollow.setText("따라가기");
-                }
-            }
-        });
+        if (user.getFollower().containsKey(uidSingleton.getUid())) {
+            binding.userFollow.setBackgroundResource(R.drawable.followed);
+            binding.userFollow.setText("따라가는 중");
+            binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
+        }
+        else {
+            binding.userFollow.setBackgroundResource(R.drawable.custom_button);
+            binding.userFollow.setText("따라가기");
+            binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.white));
+        }
     }
 
     @Override
@@ -189,18 +166,15 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
         }
         return super.onOptionsItemSelected(item);
     }
-    public String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
-    }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.user_follow:
-                if(getUid().equals(Uid))
+                if(uidSingleton.getUid().equals(Uid))
                     Util.makeToast(this,"자기 자신은 함께 가는 중입니다!");
                 else
-                    onFollowClicked(databaseReference.child("users").child(Uid));
+                    presenter.onFollowClicked(databaseReference.child("users").child(Uid));
                 break;
             case R.id.user_follower:
                 Intent intent1 = new Intent(UserActivity.this,FollowListActivity.class);

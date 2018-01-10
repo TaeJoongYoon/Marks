@@ -24,16 +24,17 @@ public class MyInfoContract {
     interface View{
         Presenter getPresenter();
         Context getAct();
+        void contentEdit(EditText editText);
         void nicknameEdit(EditText editText);
+        void goImage();
         void success(Uri uri);
         void failed();
     }
 
     public interface Presenter{
-        List<CalendarDay> eventMark(List<String> events);
-        void eventSetting(DatabaseReference databaseReference, List<String> event);
-        Intent toHistory(CalendarDay date, Activity activity);
-        void show();
+        void nicknameEdit();
+        void contentEdit();
+        void profileEdit();
         void profile_to_firebase(String imgUri, String filename);
         void fileUpload(Uri filePath);
         String getFilename();

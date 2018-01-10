@@ -16,6 +16,7 @@ public class User {
     String nickname;
     String imgUri;
     String filename;
+    String profile;
     int followingCount = 0;
     Map<String, Boolean> following = new HashMap<>();
     int followerCount = 0;
@@ -23,10 +24,11 @@ public class User {
 
     public User(){}
 
-    public User(String Uid, String nickname,String imgUri){
+    public User(String Uid, String nickname,String imgUri, String profile){
         this.Uid = Uid;
         this.nickname = nickname;
         this.imgUri = imgUri;
+        this.profile = profile;
     }
 
     @Exclude
@@ -106,5 +108,13 @@ public class User {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 }

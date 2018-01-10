@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,15 +42,14 @@ import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.FollowList.FollowListActivity;
-import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.EventDecorator;
-import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.OneDayDecorator;
-import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SaturdayDecorator;
-import com.yoon.memoria.Main.Fragment.MyInfo.Decorator.SundayDecorator;
+import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
 import com.yoon.memoria.Posting.PostingActivity;
 import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.SignIn.SignInActivity;
+import com.yoon.memoria.UidSingleton;
+import com.yoon.memoria.User.UserRecyclerViewAdapter;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.FragmentMyinfoBinding;
 
@@ -63,20 +63,16 @@ import java.util.List;
 
 import io.reactivex.Observable;
 
-public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDateSelectedListener,View.OnClickListener{
+public class MyInfoFragment extends Fragment implements MyInfoContract.View,View.OnClickListener{
     private FragmentMyinfoBinding binding;
     private MyInfoPresenter presenter;
     private DatabaseReference databaseReference;
     private StorageSingleton storageSingleton = StorageSingleton.getInstance();
-
-    private OneDayDecorator oneDayDecorator;
-    private List<String> event = new ArrayList(0);
-    private List<CalendarDay> calendarDays = new ArrayList(0);
+    private UidSingleton uidSingleton = UidSingleton.getInstance();
 
     private User user;
     private String imgUri;
     private String filename;
-    private final int GALLERY_CODE = 1112;
 
     public MyInfoFragment() {
         presenter = new MyInfoPresenter(this);
@@ -85,15 +81,15 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_myinfo,container,false);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
         initToolbar();
-        calendarinit();
+        setRecyclerView();
         return binding.getRoot();
     }
 
@@ -101,14 +97,6 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        presenter.eventSetting(databaseReference, event);
-
-        Observable<List<String>> event_observable = Observable.just(event);
-        event_observable.subscribe(
-                event -> calendarDays = presenter.eventMark(event),
-                throwable -> {});
-
-        binding.calendarView.addDecorator(new EventDecorator(Color.GREEN, calendarDays,getActivity()));
     }
 
     @Override
@@ -121,8 +109,14 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
 
         binding.myinfoToolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
+                case R.id.myinfo_profile_edit:
+                    presenter.profileEdit();
+                    break;
                 case R.id.myinfo_edit:
-                    presenter.show();
+                    presenter.nicknameEdit();
+                    break;
+                case R.id.myinfo_content_edit:
+                    presenter.contentEdit();
                     break;
                 case R.id.myinfo_logout:
                     FirebaseAuth.getInstance().signOut();
@@ -135,19 +129,21 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         });
     }
 
-    public void init(){
 
-        binding.myinfoProfile.setOnClickListener(this);
-        binding.myinfoFollowing.setOnClickListener(this);
-        binding.myinfoFollower.setOnClickListener(this);
-        databaseReference.child("users").child(getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void setRecyclerView(){
+        binding.myinfoRecyclerview.setLayoutManager(new GridLayoutManager(getContext(),3));
+        MyInfoRecyclerViewAdapter adapter = new MyInfoRecyclerViewAdapter(getActivity());
+        binding.myinfoRecyclerview.setAdapter(adapter);
+
+        databaseReference.child("users").child(uidSingleton.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
-                binding.myinfoNickname.setText(user.getNickname());
-                Util.loadImage(binding.myinfoProfile,user.getImgUri(), ContextCompat.getDrawable(getContext(),R.drawable.ic_face_black_48dp));
-                binding.myinfoFollower.setText(""+user.getFollowerCount());
-                binding.myinfoFollowing.setText(""+user.getFollowingCount());
+                List<Post> posts = new ArrayList<>(0);
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Post post = snapshot.getValue(Post.class);
+                    posts.add(0, post);
+                }
+                adapter.addItems(posts);
             }
 
             @Override
@@ -156,53 +152,32 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
             }
         });
     }
-    public void calendarinit(){
-        binding.calendarView.setOnDateChangedListener(this);
-        binding.calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
 
-        Calendar instance = Calendar.getInstance();
-        binding.calendarView.setSelectedDate(instance.getTime());
+    public void init(){
+        binding.myinfoProfile.setOnClickListener(this);
+        binding.myinfoFollowing.setOnClickListener(this);
+        binding.myinfoFollower.setOnClickListener(this);
+        databaseReference.child("users").child(uidSingleton.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                binding.myinfoNickname.setText(user.getNickname());
+                binding.myinfoProfileText.setText(user.getProfile());
+                Util.loadImage(binding.myinfoProfile,user.getImgUri(), ContextCompat.getDrawable(getContext(),R.drawable.ic_face_black_48dp));
+                binding.myinfoFollower.setText("팔로워 "+user.getFollowerCount());
+                binding.myinfoFollowing.setText("팔로잉 "+user.getFollowingCount());
+            }
 
-        binding.calendarView.state().edit()
-                .setFirstDayOfWeek(Calendar.SUNDAY)
-                .setMinimumDate(CalendarDay.from(2017, 0, 1))
-                .setMaximumDate(CalendarDay.from(2035, 11, 31))
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        oneDayDecorator = new OneDayDecorator(getActivity());
-        binding.calendarView.addDecorators(
-                new SundayDecorator(),
-                new SaturdayDecorator(),
-                oneDayDecorator
-        );
+            }
+        });
     }
 
     @Override
     public MyInfoContract.Presenter getPresenter() {
         return presenter;
-    }
-
-    @Override
-    public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-        binding.calendarView.clearSelection();
-        startActivity(presenter.toHistory(date,getActivity()));
-    }
-
-    public String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
-    }
-
-    @Override
-    public void nicknameEdit(EditText editText){
-        String temp = editText.getText().toString();
-        binding.myinfoNickname.setText(temp);
-        databaseReference.child("users").child(getUid()).child("nickname").setValue(temp);
-    }
-
-    @Override
-    public Context getAct(){
-        return getActivity();
     }
 
     @Subscribe
@@ -215,10 +190,10 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
             return;
         else{
             switch (requestCode){
-                case GALLERY_CODE:
+                case Util.GALLERY_CODE:
 
                     Uri uri = data.getData();
-                    String filePath = getRealPathFromURIPath(uri, getActivity());
+                    String filePath = Util.getRealPathFromURIPath(uri, getActivity());
                     File file = new File(filePath);
                     if(file.length()>5*2E20){
                         Util.makeToast(getActivity(),"이미지 크기는 최대 5MB 입니다");
@@ -228,6 +203,32 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
                     break;
             }
         }
+    }
+
+    @Override
+    public void nicknameEdit(EditText editText){
+        String temp = editText.getText().toString();
+        binding.myinfoNickname.setText(temp);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("nickname").setValue(temp);
+    }
+
+    @Override
+    public void contentEdit(EditText editText){
+        String temp = editText.getText().toString();
+        binding.myinfoProfileText.setText(temp);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("profile").setValue(temp);
+    }
+
+    @Override
+    public Context getAct(){
+        return getActivity();
+    }
+
+    @Override
+    public void goImage(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, Util.GALLERY_CODE);
     }
 
     @Override
@@ -249,50 +250,22 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,OnDa
         Util.makeToast(getActivity(),"사진수정 실패!");
     }
 
-
-    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
-        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            return contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString(idx);
-        }
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.myinfo_profile:
-                TedRx2Permission.with(getActivity())
-                        .setRationaleTitle(R.string.rationale_title)
-                        .setRationaleMessage(R.string.rationale_picture_message)
-                        .setDeniedMessage(R.string.rationale_denied_message)
-                        .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        .request()
-                        .subscribe(tedPermissionResult -> {
-                            if (tedPermissionResult.isGranted()) {
-                                Intent intent = new Intent(Intent.ACTION_PICK);
-                                intent.setType("image/*");
-                                startActivityForResult(intent, GALLERY_CODE);
-                            } else {
-                                Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
-                            }
-                        }, throwable -> {
-                        }, () -> {
-                        });
+               presenter.profileEdit();
                 break;
             case R.id.myinfo_follower:
                 Intent intent1 = new Intent(getActivity(),FollowListActivity.class);
                 intent1.putExtra("follower","FOLLOWER");
-                intent1.putExtra("Uid",getUid());
+                intent1.putExtra("Uid",uidSingleton.getUid());
                 startActivity(intent1);
                 break;
             case R.id.myinfo_following:
                 Intent intent2 = new Intent(getActivity(),FollowListActivity.class);
                 intent2.putExtra("following","FOLLOWING");
-                intent2.putExtra("Uid",getUid());
+                intent2.putExtra("Uid",uidSingleton.getUid());
                 startActivity(intent2);
                 break;
         }

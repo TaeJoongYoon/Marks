@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.R;
+import com.yoon.memoria.UidSingleton;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.ActivityPostingBinding;
 
@@ -28,8 +29,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
 
     private ActivityPostingBinding binding;
     private PostingPresenter presenter;
-
-    private final int GALLERY_CODE=1112;
+    private UidSingleton uidSingleton = UidSingleton.getInstance();
 
     private ProgressDialog progressDialog;
 
@@ -41,7 +41,6 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     private String content;
     private double latitude;
     private double longitude;
-    private String date;
 
     private Uri uri;
     private String filePath = "";
@@ -70,12 +69,9 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         });
         intent = getIntent();
 
-        uid = getUid();
+        uid = uidSingleton.getUid();
         latitude = intent.getDoubleExtra("latitude",0);
         longitude = intent.getDoubleExtra("longitude",0);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-        Date now = new Date();
-        date = format.format(now);
     }
 
     public void initToolbar(){
@@ -111,7 +107,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
                                 if (tedPermissionResult.isGranted()) {
                                     Intent intent = new Intent(Intent.ACTION_PICK);
                                     intent.setType("image/*");
-                                    startActivityForResult(intent, GALLERY_CODE);
+                                    startActivityForResult(intent, Util.GALLERY_CODE);
                                 } else {
                                     Util.makeToast(this, "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
                                 }
@@ -137,7 +133,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         filename = presenter.getFilename();
         content = binding.postEdit.getText().toString();
         progressDialog.dismiss();
-        presenter.post_to_firebase(uid,date,latitude,longitude, imgUri, filename,content);
+        presenter.post_to_firebase(uid,latitude,longitude, imgUri, filename,content);
     }
 
     @Override
@@ -147,9 +143,9 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == GALLERY_CODE && resultCode == Activity.RESULT_OK){
+        if(requestCode == Util.GALLERY_CODE && resultCode == Activity.RESULT_OK){
             uri = data.getData();
-            filePath = getRealPathFromURIPath(uri, PostingActivity.this);
+            filePath = Util.getRealPathFromURIPath(uri, PostingActivity.this);
             File file = new File(filePath);
             if(file.length()>5*2E20){
                 Util.makeToast(this,"이미지 크기는 최대 5MB 입니다");
@@ -159,20 +155,5 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
                         .into(binding.postImage);
             }
         }
-    }
-
-    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
-        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) {
-            return contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString(idx);
-        }
-    }
-
-    public String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }

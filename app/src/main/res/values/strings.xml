@@ -15,4 +15,9 @@
 
     <string name="follower"> FOLLOWER </string>
     <string name="following"> FOLLOWING </string>
+
+    <string name="today_place"> 오늘의 방문장소</string>
+    <string name="place_comment"> 아래는 오늘의 예상 방문장소입니다.\n방문하지 않았거나 겹치는 방문장소가 있다면\n삭제하셔도 좋습니다.\n\n삭제 방법은 꾹 누르시면 됩니다.</string>
+
+    <string name="quiz_title">오늘의 퀴즈</string>
 </resources>

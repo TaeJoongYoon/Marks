@@ -11,36 +11,29 @@ import java.util.Map;
 
 public class Place {
 
-    String date;
     String placeName;
     String placeID;
     String detail;
+    String address;
 
     public Place(){}
 
-    public Place(String date, String placeName, String placeID, String detail){
-        this.date = date;
+    public Place(String placeName, String placeID, String detail, String address){
         this.placeName = placeName;
         this.placeID = placeID;
         this.detail = detail;
+        this.address = address;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("date", date);
         result.put("placeName", placeName);
+        result.put("placeID",placeID);
         result.put("detail", detail);
+        result.put("address",address);
 
         return result;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public String getPlaceName() {
@@ -65,5 +58,13 @@ public class Place {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

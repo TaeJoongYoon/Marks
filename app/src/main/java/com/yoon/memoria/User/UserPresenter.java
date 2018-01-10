@@ -8,6 +8,8 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.R;
+import com.yoon.memoria.UidSingleton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +20,46 @@ import java.util.Map;
 
 public class UserPresenter implements UserContract.Presenter {
     private UserContract.View view;
+    private UidSingleton uidSingleton = UidSingleton.getInstance();
 
     public UserPresenter(UserContract.View view){
         this.view = view;
+    }
+
+
+    public void onFollowClicked(DatabaseReference postRef) {
+        postRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                User user = mutableData.getValue(User.class);
+
+                if (user == null) {
+
+                    return Transaction.success(mutableData);
+                }
+
+
+                if (user.getFollower().containsKey(uidSingleton.getUid())) {
+                    user.setFollowerCount(user.getFollowerCount()-1);
+                    user.getFollower().remove(uidSingleton.getUid());
+
+                } else {
+                    user.setFollowerCount(user.getFollowerCount()+1);
+                    user.getFollower().put(uidSingleton.getUid(), true);
+                }
+
+                mutableData.child("follower").setValue(user.getFollower());
+                mutableData.child("followerCount").setValue(user.getFollowerCount());
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b,
+                                   DataSnapshot dataSnapshot) {
+
+                view.onCompleted(dataSnapshot);
+            }
+        });
     }
 
     @Override
@@ -55,9 +94,5 @@ public class UserPresenter implements UserContract.Presenter {
                                    DataSnapshot dataSnapshot) {
             }
         });
-    }
-
-    public String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }

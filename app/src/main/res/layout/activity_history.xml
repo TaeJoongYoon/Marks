@@ -11,9 +11,35 @@
 
         </variable>
     </data>
-    <android.support.constraint.ConstraintLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </android.support.constraint.ConstraintLayout>
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/historyToolbar"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentTop="true"
+            >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/historyDate"
+                    android:textSize="@dimen/profile_nickname_size"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"/>
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/historyToolbar_recyclerview"
+            android:layout_below="@+id/historyToolbar">
+        </android.support.v7.widget.RecyclerView>
+
+    </RelativeLayout>
 </layout>

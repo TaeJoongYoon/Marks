@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.UidSingleton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,9 +43,12 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 public class MapPresenter implements MapContract.Presenter {
 
     private MapContract.View view;
+    private UidSingleton uidSingleton =UidSingleton.getInstance();
+
     private final static int MAXENTRIES = 5;
     private String[] LikelyPlaceNames = null;
     private String[] LikelyPlaceIDs = null;
+    private String[] LikelyPlaceAddresses = null;
 
     public MapPresenter(MapContract.View view){
         this.view = view;
@@ -74,14 +78,12 @@ public class MapPresenter implements MapContract.Presenter {
         markerOptions.draggable(true);
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
-
         return  markerOptions;
     }
 
     @Override
     public void setCurrentLocation(GoogleMap googleMap, LatLng DEFAULT_LOCATION, Location location) {
         if (location != null) {
-            //현재위치의 위도 경도 가져옴
             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
@@ -93,6 +95,24 @@ public class MapPresenter implements MapContract.Presenter {
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
+    @Override
+    public void onConnected(){
+        view.onConnected();
+    }
+    @Override
+    public void onConnectionFailed(){
+        view.onConnectionFailed();
+    }
+
+    @Override
+    public void onLocationChanged(GoogleApiClient googleApiClient, Location location){
+        view.onLocationChanged(googleApiClient, location);
+    }
+
+    @Override
+    public void setMyLocationEnable(){
+        view.setMyLocationEnabled();
+    }
     public void searchCurrentPlaces(GoogleApiClient googleApiClient,DatabaseReference databaseReference) {
         @SuppressWarnings("MissingPermission")
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
@@ -104,45 +124,40 @@ public class MapPresenter implements MapContract.Presenter {
                 int i = 0;
                 LikelyPlaceNames = new String[MAXENTRIES];
                 LikelyPlaceIDs = new String[MAXENTRIES];
+                LikelyPlaceAddresses = new String[MAXENTRIES];
 
                 for(PlaceLikelihood placeLikelihood : placeLikelihoods) {
-                    LikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
-                    LikelyPlaceIDs[i] = (String) placeLikelihood.getPlace().getId();
+                    LikelyPlaceNames[i] = placeLikelihood.getPlace().getName().toString();
+                    LikelyPlaceIDs[i] = placeLikelihood.getPlace().getId();
+                    LikelyPlaceAddresses[i] = placeLikelihood.getPlace().getAddress().toString();
 
                     i++;
                     if(i > MAXENTRIES - 1 ) {
                         break;
                     }
                 }
-
                 placeLikelihoods.release();
 
-
                 if (LikelyPlaceNames[0].equals(view.getPreviousPlace())){
-                    setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0]);
+                    setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0], LikelyPlaceAddresses[0]);
                     view.setPreviousPlace(null);
                 }
                 else
                     view.setPreviousPlace(LikelyPlaceNames[0]);
-
             }
         });
     }
 
-    public void setCurrentPlace(DatabaseReference databaseReference, String name, String ID) {
+    public void setCurrentPlace(DatabaseReference databaseReference, String name, String ID, String address) {
         Date now = new Date();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat detailFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
 
         String date = dateFormat.format(now);
         String detail = detailFormat.format(now);
 
-        Place place = new Place(date, name, ID, detail);
-        databaseReference.child("users").child(getUid()).child("places").push().setValue(place);
-    }
-
-    public String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Place place = new Place(name, ID, detail, address);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).push().setValue(place);
     }
 }

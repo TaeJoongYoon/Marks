@@ -9,10 +9,11 @@ import com.google.firebase.database.DatabaseReference;
 
 public class UserContract {
     interface View{
-
+        void onCompleted(DataSnapshot dataSnapshot);
     }
 
     interface Presenter{
+        void onFollowClicked(DatabaseReference postRef);
         void onFollowed(DatabaseReference postRef, DataSnapshot followRef, DatabaseReference databaseReference);
     }
 }

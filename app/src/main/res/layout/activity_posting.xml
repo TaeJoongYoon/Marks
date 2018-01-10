@@ -21,24 +21,13 @@
             android:id="@+id/postingToolbar"
             android:background="@color/colorPrimary"
             >
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
-                <ImageView
-                    android:layout_width="@dimen/list_item_avatar_size"
-                    android:layout_height="@dimen/list_item_avatar_size"
-                    android:src="@mipmap/ic_launcher"
-                    android:layout_marginRight="@dimen/default_padding"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:layout_gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/profile_nickname_size"/>
-            </LinearLayout>
+                android:text="@string/app_name"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="@dimen/profile_nickname_size"/>
         </android.support.v7.widget.Toolbar>
         <ScrollView
             android:layout_width="match_parent"
@@ -52,7 +41,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/post_image"
-                    android:layout_margin="@dimen/default_padding"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:background="#000000"/>
@@ -71,8 +59,8 @@
                     android:text="업로드"
                     android:layout_below="@+id/postEdit"
                     android:layout_centerHorizontal="true"
-                    android:background="@drawable/custom_button"
-                    android:layout_margin="@dimen/default_padding"/>
+                    android:textColor="@color/white"
+                    android:background="@drawable/custom_button"/>
             </RelativeLayout>
 
         </ScrollView>

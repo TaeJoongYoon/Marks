@@ -15,6 +15,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.StorageSingleton;
+import com.yoon.memoria.UidSingleton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +31,7 @@ public class PostingPresenter implements PostingContract.Presenter {
 
     private DatabaseReference firebaseDatabase;
     private FirebaseStorage firebaseStorage;
+    private UidSingleton uidSingleton = UidSingleton.getInstance();
     private Post post;
     private String filename;
 
@@ -39,16 +41,16 @@ public class PostingPresenter implements PostingContract.Presenter {
 
 
     @Override
-    public void post_to_firebase(String uid, String date, double latitude, double longitude,String imgUri, String filename, String content) {
+    public void post_to_firebase(String uid, double latitude, double longitude,String imgUri, String filename, String content) {
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
         String KEY = firebaseDatabase.child("posts").push().getKey();
-        post = new Post(uid,KEY,date,latitude,longitude,imgUri, filename,content);
+        post = new Post(uid,KEY,latitude,longitude,imgUri, filename,content);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/posts/" + KEY, postValues);
-        childUpdates.put("/users/" + getUid() + "/" + "/posts/" + KEY, postValues);
+        childUpdates.put("/users/" + uidSingleton.getUid() + "/" + "/posts/" + KEY, postValues);
 
         firebaseDatabase.updateChildren(childUpdates);
         view.post_OK();
@@ -86,10 +88,6 @@ public class PostingPresenter implements PostingContract.Presenter {
                 });
 
 
-    }
-
-    public String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     public String getFilename(){
