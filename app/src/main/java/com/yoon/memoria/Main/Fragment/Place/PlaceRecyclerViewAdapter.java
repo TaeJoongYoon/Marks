@@ -1,6 +1,7 @@
 package com.yoon.memoria.Main.Fragment.Place;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoRecyclerViewAdapter;
 import com.yoon.memoria.Main.MainActivity;
 import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.R;
+import com.yoon.memoria.User.UserActivity;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.PlaceItemBinding;
 
@@ -26,14 +28,13 @@ import com.yoon.memoria.databinding.PlaceItemBinding;
  * Created by Yoon on 2018-01-09.
  */
 
-public class PlaceRecyclerViewAdapter extends BaseRecyclerViewAdapter<Place,PlaceRecyclerViewAdapter.ViewHolder> implements BaseRecyclerViewAdapter.OnItemLongClickListener{
+public class PlaceRecyclerViewAdapter extends BaseRecyclerViewAdapter<Place,PlaceRecyclerViewAdapter.ViewHolder> implements BaseRecyclerViewAdapter.OnItemLongClickListener, PlaceContract.Adapter{
 
-    public MainActivity activity;
-
-    public PlaceRecyclerViewAdapter(Context context) {
+    private PlaceContract.View view;
+    public PlaceRecyclerViewAdapter(Context context, PlaceContract.View view) {
         super(context);
+        this.view = view;
         setOnItemLongClickListener(this);
-        activity = (MainActivity)context;
     }
 
     @Override
@@ -51,7 +52,8 @@ public class PlaceRecyclerViewAdapter extends BaseRecyclerViewAdapter<Place,Plac
 
     @Override
     public void onItemLongClick(View view, int position) {
-
+        String Uid = getItem(position).getUid();
+        this.view.delete(Uid);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

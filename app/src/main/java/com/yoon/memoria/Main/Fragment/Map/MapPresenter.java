@@ -152,12 +152,13 @@ public class MapPresenter implements MapContract.Presenter {
         Date now = new Date();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat detailFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+        SimpleDateFormat detailFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분");
 
         String date = dateFormat.format(now);
         String detail = detailFormat.format(now);
 
-        Place place = new Place(name, ID, detail, address);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).push().setValue(place);
+        String KEY = databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).push().getKey();
+        Place place = new Place(KEY, name, ID, detail, address);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).child(KEY).setValue(place);
     }
 }

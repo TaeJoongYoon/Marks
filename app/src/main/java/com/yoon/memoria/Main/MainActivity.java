@@ -2,12 +2,16 @@ package com.yoon.memoria.Main;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +30,8 @@ import com.google.android.gms.location.places.Places;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.EventBus.BusProvider;
+import com.yoon.memoria.GoogleApiSingleton;
+import com.yoon.memoria.GoogleService;
 import com.yoon.memoria.Main.Fragment.Map.MapContract;
 import com.yoon.memoria.Main.Fragment.Map.MapFragment;
 import com.yoon.memoria.Main.Fragment.MyInfo.MyInfoContract;
@@ -35,16 +41,16 @@ import com.yoon.memoria.R;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.ActivityMainBinding;
 
+import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST;
+import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private ViewPagerAdapter viewPagerAdapter;
     private MenuItem prevBottomNavigation;
-
-    private GoogleApiClient googleApiClient = null;
+    private GoogleApiSingleton googleApiSingleton = GoogleApiSingleton.getInstance();
 
     private MapFragment mapFragment;
     private PlaceFragment placeFragment;
@@ -53,12 +59,41 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private MapContract.Presenter mapPresenter;
     private MyInfoContract.Presenter myInfoPresenter;
 
+    private GoogleService googleService;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            GoogleService.MyBinder binder = (GoogleService.MyBinder) iBinder;
+            googleService = binder.getService();
+            googleService.registerCallback(callback);
+        }
 
-    private static final int UPDATE_INTERVAL_MS = 1000 * 60 * 1;           // 20분
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 60 * 1;   // 20분
-    private LocationRequest locationRequest = new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                                                                   .setInterval(UPDATE_INTERVAL_MS)
-                                                                   .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            googleService = null;
+        }
+    };
+    private GoogleService.Callback callback = new GoogleService.Callback() {
+        @Override
+        public void onLocationChanged(Location location) {
+            mapFragment.onLocationChanged(googleApiSingleton.getGoogleApiClient(),location);
+        }
+
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            mapFragment.onConnected();
+        }
+
+        @Override
+        public void onConnectionSuspended(int cause) {
+            onSuspend(cause);
+        }
+
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+            mapFragment.onConnectionFailed();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +105,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         initViewPager();
         initTabLayout();
 
-        buildGoogleApiClient();
-
+        bindService(new Intent(MainActivity.this, GoogleService.class),serviceConnection,BIND_AUTO_CREATE);
         mapPresenter = mapFragment.getPresenter();
         myInfoPresenter = myInfoFragment.getPresenter();
     }
@@ -80,16 +114,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mapFragment = new MapFragment();
         placeFragment = new PlaceFragment();
         myInfoFragment = new MyInfoFragment();
-    }
-
-    private void buildGoogleApiClient() {
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .build();
     }
 
     public void initTabLayout(){
@@ -149,8 +173,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         switch (requestCode) {
             case Util.GPS_ENABLE_REQUEST_CODE:
                 if (checkLocationServicesStatus()) {
-                    if (!googleApiClient.isConnected()) {
-                        googleApiClient.connect();
+                    if (!googleApiSingleton.getGoogleApiClient().isConnected()) {
+                        googleApiSingleton.getGoogleApiClient().connect();
                     }
                     return;
                 }
@@ -173,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .request()
                     .subscribe(tedPermissionResult -> {
                         if (tedPermissionResult.isGranted()) {
-                            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+                            googleService.request();
                             mapPresenter.setMyLocationEnable();
                         } else {
                             Util.makeToast(this, "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
@@ -185,21 +209,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if(googleApiClient != null && !googleApiClient.isConnected()){
-            googleApiClient.connect();
-            System.out.println("CCC connect");
-        }
-    }
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if ( googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
-            googleApiClient.disconnect();
-        }
+        unbindService(serviceConnection);
         clearApplicationCache(null);
+    }
+
+    public void onSuspend(int cause){
+        if ( cause ==  CAUSE_NETWORK_LOST )
+            Util.makeToast(this, "네트워크가 잠시 끊겼습니다.");
+        else if (cause == CAUSE_SERVICE_DISCONNECTED )
+            Util.makeToast(this, "서비스가 일시적으로 중단되었습니다.");
     }
 
     private void clearApplicationCache(java.io.File dir){
@@ -218,34 +238,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
         catch(Exception e){}
     }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        mapPresenter.onConnected();
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        if ( cause ==  CAUSE_NETWORK_LOST )
-            Util.makeToast(this, "네트워크가 잠시 끊겼습니다.");
-        else if (cause == CAUSE_SERVICE_DISCONNECTED )
-            Util.makeToast(this, "서비스가 일시적으로 중단되었습니다.");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        mapPresenter.onConnectionFailed();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mapPresenter.onLocationChanged(googleApiClient, location);
-    }
-
-    public GoogleApiClient getGoogleApiClient(){
-        return googleApiClient;
-    }
-
 
     public void showDialogForLocation(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

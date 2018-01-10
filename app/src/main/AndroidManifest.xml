@@ -55,7 +55,12 @@
             android:value="AIzaSyBKhqvguixfw97_20QAT8kcILelZRottI0" />
 
         <activity android:name=".User.UserActivity" />
-        <activity android:name=".FollowList.FollowListActivity"></activity>
+        <activity android:name=".FollowList.FollowListActivity" />
+
+        <service
+            android:name=".GoogleService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

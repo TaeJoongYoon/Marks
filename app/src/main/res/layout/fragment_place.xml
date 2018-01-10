@@ -36,6 +36,7 @@
             android:layout_below="@+id/placeToolbar"
             android:id="@+id/text"
             android:gravity="center_horizontal"
+            android:textSize="@dimen/small_textSize"
             android:text="@string/place_comment"
             android:layout_marginTop="@dimen/default_padding"
             android:layout_marginBottom="@dimen/default_padding"/>
@@ -44,8 +45,18 @@
             android:layout_height="match_parent"
             android:id="@+id/place_recyclerview"
             android:layout_below="@+id/text">
+
         </android.support.v7.widget.RecyclerView>
 
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/place_progress_bar"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:elevation="24dp"
+            />
 
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"

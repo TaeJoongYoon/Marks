@@ -19,13 +19,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:layout_width="@dimen/profile_avatar_size"
-                    android:layout_height="@dimen/profile_avatar_size"
+                    android:layout_width="@dimen/list_photo_place"
+                    android:layout_height="@dimen/list_photo_place"
                     android:layout_margin="@dimen/default_padding"
                     android:id="@+id/place_photo"/>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/profile_avatar_size"
+                    android:layout_height="@dimen/list_photo_place"
                     android:orientation="vertical"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/place_photo"
@@ -48,7 +48,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/place_address"
-                        android:maxLines="1"
                         android:text="@{place.address}"/>
                 </LinearLayout>
             </RelativeLayout>

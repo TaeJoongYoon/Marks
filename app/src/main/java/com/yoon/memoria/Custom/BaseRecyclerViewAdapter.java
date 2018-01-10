@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.yoon.memoria.Main.Fragment.Place.PlaceContract;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,7 @@ public abstract class BaseRecyclerViewAdapter<T, H extends RecyclerView.ViewHold
     OnItemClickListener onItemClickListener;
     OnItemLongClickListener onItemLongClickListener;
     private Context context;
+    private PlaceContract.View view;
 
 
     public BaseRecyclerViewAdapter(Context context) {
@@ -27,6 +30,10 @@ public abstract class BaseRecyclerViewAdapter<T, H extends RecyclerView.ViewHold
         this.context = context;
         this.arrayList = arrayList;
 
+    }
+
+    public BaseRecyclerViewAdapter(Context context, PlaceContract.View view){
+        this.context = context;
     }
 
     public Context getContext() {
@@ -65,6 +72,7 @@ public abstract class BaseRecyclerViewAdapter<T, H extends RecyclerView.ViewHold
         if (this.arrayList == null) {
             this.arrayList = items;
         } else {
+            clearItems();
             this.arrayList.addAll(items);
         }
         notifyDataSetChanged();

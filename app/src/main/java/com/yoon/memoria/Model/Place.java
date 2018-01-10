@@ -1,6 +1,7 @@
 package com.yoon.memoria.Model;
 
 import com.google.firebase.database.Exclude;
+import com.yoon.memoria.UidSingleton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 public class Place {
 
+    private String Uid;
     String placeName;
     String placeID;
     String detail;
@@ -18,7 +20,8 @@ public class Place {
 
     public Place(){}
 
-    public Place(String placeName, String placeID, String detail, String address){
+    public Place(String Uid, String placeName, String placeID, String detail, String address){
+        this.Uid = Uid;
         this.placeName = placeName;
         this.placeID = placeID;
         this.detail = detail;
@@ -28,12 +31,21 @@ public class Place {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("Uid", Uid);
         result.put("placeName", placeName);
         result.put("placeID",placeID);
         result.put("detail", detail);
         result.put("address",address);
 
         return result;
+    }
+
+    public String getUid() {
+        return Uid;
+    }
+
+    public void setUid(String uid) {
+        Uid = uid;
     }
 
     public String getPlaceName() {

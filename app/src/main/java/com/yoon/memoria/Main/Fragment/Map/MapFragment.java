@@ -56,6 +56,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.BusProvider;
+import com.yoon.memoria.GoogleApiSingleton;
 import com.yoon.memoria.Main.MainActivity;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Posting.PostingActivity;
@@ -77,6 +78,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     private DatabaseReference databaseReference;
     private MapPresenter presenter;
     private MainActivity activity;
+    private GoogleApiSingleton googleApiSingleton = GoogleApiSingleton.getInstance();
 
     private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
 
@@ -191,7 +193,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         binding.mapToolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.menu_map:
-                    postLocation = LocationServices.FusedLocationApi.getLastLocation(activity.getGoogleApiClient());
+                    postLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiSingleton.getGoogleApiClient());
                     if(postLocation == null)
                         Util.makeToast(getActivity(),"위치가 확인되지 않습니다");
                     else {
@@ -302,7 +304,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
 
     @SuppressLint("MissingPermission")
     public void getDeviceLocation(){
-        mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(activity.getGoogleApiClient());
+        mLastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiSingleton.getGoogleApiClient());
         if (mCameraPosition != null) {
             googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
         } else if (mLastKnownLocation != null) {
@@ -327,6 +329,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 .subscribe(tedPermissionResult -> {
                     if (tedPermissionResult.isGranted()) {
                         googleMap.setMyLocationEnabled(true);
+                        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
                         activity.startLocationUpdates();
                     } else {
                         Util.makeToast(getActivity(), "권한 거부\n" + tedPermissionResult.getDeniedPermissions().toString());
@@ -340,6 +343,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     @Override
     public void setMyLocationEnabled(){
         googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
     @Override

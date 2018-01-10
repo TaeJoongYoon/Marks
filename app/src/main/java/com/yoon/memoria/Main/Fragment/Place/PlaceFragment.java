@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.Quiz.QuizActivity;
 import com.yoon.memoria.R;
 import com.yoon.memoria.UidSingleton;
+import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.FragmentPlaceBinding;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class PlaceFragment extends Fragment implements ValueEventListener, DatePickerDialog.OnDateSetListener {
+public class PlaceFragment extends Fragment implements ValueEventListener, DatePickerDialog.OnDateSetListener,PlaceContract.View {
     private FragmentPlaceBinding binding;
     private DatabaseReference databaseReference;
     private UidSingleton uidSingleton = UidSingleton.getInstance();
@@ -98,7 +100,7 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
 
     public void setRecyclerView(){
         binding.placeRecyclerview.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        adapter = new PlaceRecyclerViewAdapter(getActivity());
+        adapter = new PlaceRecyclerViewAdapter(getActivity(),this);
         binding.placeRecyclerview.setAdapter(adapter);
         databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
     }
@@ -135,5 +137,15 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
         intent.putExtra("month", calendar.get(Calendar.MONTH));
         intent.putExtra("day", calendar.get(Calendar.DAY_OF_MONTH));
         startActivity(intent);
+    }
+
+    @Override
+    public void delete(String Uid) {
+        binding.placeProgressBar.setVisibility(View.VISIBLE);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).removeEventListener(this);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).child(Uid).removeValue();
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
+        Util.makeToast(getActivity(),"삭제되었습니다!");
+        binding.placeProgressBar.setVisibility(View.GONE);
     }
 }
