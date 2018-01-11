@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,24 +64,28 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_place,container,false);
         now = new Date();
         date = dateFormat.format(now);
-
-        initToolbar();
-        setRecyclerView();
-        init();
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initToolbar();
+        setRecyclerView();
+        init();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).removeEventListener(this);
+    public void onStart() {
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
+        super.onStart();
     }
 
+    @Override
+    public void onStop() {
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).removeEventListener(this);
+        super.onStop();
+    }
     public void initToolbar(){
         binding.placeToolbar.inflateMenu(R.menu.menu_place);
 
@@ -102,7 +107,6 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
         binding.placeRecyclerview.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         adapter = new PlaceRecyclerViewAdapter(getActivity(),this);
         binding.placeRecyclerview.setAdapter(adapter);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
     }
 
     public void show(){
@@ -142,9 +146,7 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
     @Override
     public void delete(String Uid) {
         binding.placeProgressBar.setVisibility(View.VISIBLE);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).removeEventListener(this);
         databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).child(Uid).removeValue();
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
         Util.makeToast(getActivity(),"삭제되었습니다!");
         binding.placeProgressBar.setVisibility(View.GONE);
     }

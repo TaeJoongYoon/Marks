@@ -78,7 +78,7 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
         setSupportActionBar(binding.postingToolbar);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_48dp);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_48dp);
         getSupportActionBar().setTitle(null);
     }
 

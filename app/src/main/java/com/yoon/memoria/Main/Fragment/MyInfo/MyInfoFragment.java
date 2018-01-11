@@ -19,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +35,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.CalendarMode;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.squareup.otto.Subscribe;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
@@ -70,6 +67,10 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,View
     private StorageSingleton storageSingleton = StorageSingleton.getInstance();
     private UidSingleton uidSingleton = UidSingleton.getInstance();
 
+    private ValueEventListener postListener;
+    private ValueEventListener profileListener;
+
+    private MyInfoRecyclerViewAdapter adapter;
     private User user;
     private String imgUri;
     private String filename;
@@ -82,6 +83,39 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,View
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Post> posts = new ArrayList<>(0);
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Post post = snapshot.getValue(Post.class);
+                    posts.add(0, post);
+                }
+                adapter.addItems(posts);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        profileListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                binding.myinfoNickname.setText(user.getNickname());
+                binding.myinfoProfileText.setText(user.getProfile());
+                Util.loadImage(binding.myinfoProfile,user.getImgUri(), ContextCompat.getDrawable(getContext(),R.drawable.ic_face_black_48dp));
+                binding.myinfoFollower.setText("팔로워 "+user.getFollowerCount());
+                binding.myinfoFollowing.setText("팔로잉 "+user.getFollowingCount());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -89,6 +123,7 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,View
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_myinfo,container,false);
         initToolbar();
+        init();
         setRecyclerView();
         return binding.getRoot();
     }
@@ -101,8 +136,16 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,View
 
     @Override
     public void onStart() {
-        init();
+        databaseReference.child("users").child(uidSingleton.getUid()).addListenerForSingleValueEvent(profileListener);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("posts").addListenerForSingleValueEvent(postListener);
         super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        databaseReference.child("users").child(uidSingleton.getUid()).removeEventListener(profileListener);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("posts").removeEventListener(postListener);
+        super.onStop();
     }
     public void initToolbar() {
         binding.myinfoToolbar.inflateMenu(R.menu.menu_myinfo);
@@ -132,47 +175,14 @@ public class MyInfoFragment extends Fragment implements MyInfoContract.View,View
 
     public void setRecyclerView(){
         binding.myinfoRecyclerview.setLayoutManager(new GridLayoutManager(getContext(),3));
-        MyInfoRecyclerViewAdapter adapter = new MyInfoRecyclerViewAdapter(getActivity());
+        adapter = new MyInfoRecyclerViewAdapter(getActivity());
         binding.myinfoRecyclerview.setAdapter(adapter);
-
-        databaseReference.child("users").child(uidSingleton.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Post> posts = new ArrayList<>(0);
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Post post = snapshot.getValue(Post.class);
-                    posts.add(0, post);
-                }
-                adapter.addItems(posts);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     public void init(){
         binding.myinfoProfile.setOnClickListener(this);
         binding.myinfoFollowing.setOnClickListener(this);
         binding.myinfoFollower.setOnClickListener(this);
-        databaseReference.child("users").child(uidSingleton.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
-                binding.myinfoNickname.setText(user.getNickname());
-                binding.myinfoProfileText.setText(user.getProfile());
-                Util.loadImage(binding.myinfoProfile,user.getImgUri(), ContextCompat.getDrawable(getContext(),R.drawable.ic_face_black_48dp));
-                binding.myinfoFollower.setText("팔로워 "+user.getFollowerCount());
-                binding.myinfoFollowing.setText("팔로잉 "+user.getFollowingCount());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override

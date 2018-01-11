@@ -4,7 +4,7 @@
     <item
         android:id="@+id/menu_post"
         android:orderInCategory="0"
-        android:icon="@drawable/ic_photo_library_black_48dp"
+        android:icon="@drawable/ic_photo_library_white_48dp"
         android:title="post"
         app:showAsAction="always">
     </item>

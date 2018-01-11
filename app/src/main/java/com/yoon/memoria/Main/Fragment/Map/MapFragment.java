@@ -116,10 +116,8 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_map,container,false);
         setHasOptionsMenu(true);
-
         binding.map.getMapAsync(this);
 
-        databaseReference.child("posts").addValueEventListener(this);
         initGoogleSearch();
         return binding.getRoot();
     }
@@ -129,7 +127,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         super.onActivityCreated(savedInstanceState);
 
         initToolbar();
-
         if (binding.map != null)
             binding.map.onCreate(savedInstanceState);
     }
@@ -138,6 +135,7 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
     public void onStart() {
         super.onStart();
         binding.map.onStart();
+        databaseReference.child("posts").addValueEventListener(this);
     }
 
     @Override

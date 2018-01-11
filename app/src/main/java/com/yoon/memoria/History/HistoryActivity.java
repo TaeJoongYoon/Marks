@@ -37,6 +37,8 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
     private int MONTH;
     private int DAY;
 
+    private int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +56,11 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
         YEAR = intent.getIntExtra("year",2000);
         MONTH = intent.getIntExtra("month",1) + 1;
         DAY = intent.getIntExtra("day",1);
-        date = YEAR + "-" + MONTH + "-" + DAY;
 
+        if(MONTH >=10)
+            date = YEAR + "-" + MONTH + "-" + DAY;
+        else
+            date = YEAR + "-0" + MONTH + "-" + DAY;
         binding.historyDate.setText(YEAR + "년 " + MONTH + "월 " + DAY + "일");
     }
 
@@ -63,7 +68,7 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
         setSupportActionBar(binding.historyToolbar);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_48dp);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_48dp);
         getSupportActionBar().setTitle(null);
     }
 
@@ -71,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
         binding.historyToolbarRecyclerview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapter = new HistoryRecyclerViewAdapter(this);
         binding.historyToolbarRecyclerview.setAdapter(adapter);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addListenerForSingleValueEvent(this);
     }
 
     @Override
@@ -92,7 +97,10 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
         for(DataSnapshot snapshot : dataSnapshot.getChildren()){
             Place place = snapshot.getValue(Place.class);
             places.add(place);
+            count++;
         }
+        if(count == 0)
+            Util.makeToast(this,"방문하신 장소가 없습니다!");
         adapter.addItems(places);
     }
 

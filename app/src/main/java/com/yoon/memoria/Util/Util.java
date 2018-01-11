@@ -1,16 +1,22 @@
 package com.yoon.memoria.Util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.yoon.memoria.Model.PhotoTask;
+import com.yoon.memoria.R;
 
 /**
  * Created by Yoon on 2017-11-12.
@@ -18,6 +24,7 @@ import com.bumptech.glide.Glide;
 
 public class Util {
 
+    public static final int EDIT_OODE = 1110;
     public static final int POST_CODE = 1111;
     public static final int GALLERY_CODE=1112;
     public static final int GPS_ENABLE_REQUEST_CODE = 2001;
@@ -47,5 +54,22 @@ public class Util {
                 .load(url)
                 .error(errorDrawable)
                 .into(imageView);
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public static void placePhotosTask(ImageView imageView, String placeId, Drawable drawable) {
+        new PhotoTask(imageView.getWidth(), imageView.getHeight()) {
+            @Override
+            protected void onPreExecute() {
+                imageView.setImageDrawable(drawable);
+            }
+
+            @Override
+            protected void onPostExecute(AttributedPhoto attributedPhoto) {
+                if (attributedPhoto != null) {
+                    imageView.setImageBitmap(attributedPhoto.bitmap);
+                }
+            }
+        }.execute(placeId);
     }
 }

@@ -1,19 +1,34 @@
 package com.yoon.memoria.Reading;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.net.Uri;
 import android.provider.Contacts;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,16 +49,19 @@ import com.yoon.memoria.User.UserActivity;
 import com.yoon.memoria.Util.Util;
 import com.yoon.memoria.databinding.ActivityReadingBinding;
 
+import static com.yoon.memoria.R.id.post_btn;
 import static com.yoon.memoria.R.id.read_delete;
 import static com.yoon.memoria.R.id.read_edit;
 
 
-public class ReadingActivity extends AppCompatActivity implements ReadingContract.View, View.OnClickListener{
+public class ReadingActivity extends AppCompatActivity implements ReadingContract.View, View.OnClickListener, OnMapReadyCallback{
     private ActivityReadingBinding binding;
     private StorageSingleton storageSingleton = StorageSingleton.getInstance();
     private UidSingleton uidSingleton = UidSingleton.getInstance();
     private DatabaseReference databaseReference;
     private ReadingPresenter presenter;
+
+    private GoogleMap googleMap;
 
     private Post post;
     private Intent intent;
@@ -80,7 +98,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         setSupportActionBar(binding.readingToolbar);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_48dp);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_48dp);
         getSupportActionBar().setTitle(null);
     }
 
@@ -91,6 +109,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         binding.readTvUsername.setOnClickListener(this);
         binding.readBtnEdit.setOnClickListener(this);
         binding.readBtnLike.setOnClickListener(this);
+        binding.readLocation.setOnClickListener(this);
     }
 
     public void UISetting(){
@@ -112,6 +131,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         Util.loadImage(binding.readImage,post.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
         binding.readTvLike.setText(""+post.getLikeCount());
         binding.readTvContent.setText(post.getContent());
+        binding.readLocation.setBackgroundResource(R.drawable.ic_location_on_black_48dp);
         if (post.getLikes().containsKey(uidSingleton.getUid())) {
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
         } else {
@@ -186,6 +206,34 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
             case R.id.read_btn_like:
                 presenter.onStarClicked(databaseReference.child("posts").child(postUid));
                 break;
+            case R.id.read_location:
+                final Dialog dialog = new Dialog(this);
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                dialog.setContentView(R.layout.locaion_dialog);
+
+                MapView mMapView = dialog.findViewById(R.id.location);
+                MapsInitializer.initialize(this);
+                mMapView.onCreate(dialog.onSaveInstanceState());
+                mMapView.onResume();
+                mMapView.getMapAsync(this);
+
+                dialog.show();
+                break;
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        LatLng latLng = new LatLng(post.getLatitude(),post.getLongitude());
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        googleMap.addMarker(markerOptions);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 }

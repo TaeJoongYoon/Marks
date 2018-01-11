@@ -29,7 +29,7 @@
                     android:layout_gravity="center"
                     android:id="@+id/historyDate"
                     android:textSize="@dimen/profile_nickname_size"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textStyle="bold"/>
 
         </android.support.v7.widget.Toolbar>

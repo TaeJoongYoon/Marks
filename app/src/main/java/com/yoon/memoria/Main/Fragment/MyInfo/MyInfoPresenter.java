@@ -24,7 +24,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.History.HistoryActivity;
 import com.yoon.memoria.Model.Post;

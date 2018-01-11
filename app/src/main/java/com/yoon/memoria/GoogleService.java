@@ -22,8 +22,8 @@ public class GoogleService extends Service implements GoogleApiClient.Connection
     private IBinder binder = new MyBinder();
     private GoogleApiSingleton googleApiSingleton = GoogleApiSingleton.getInstance();
 
-    private static final int UPDATE_INTERVAL_MS = 1000 * 30 * 1;           // 20분
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 30 * 1;   // 20분
+    private static final int UPDATE_INTERVAL_MS = 1000 * 60 * 20;           // 20분
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 60 * 20;   // 20분
     private LocationRequest locationRequest = new LocationRequest().setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
             .setInterval(UPDATE_INTERVAL_MS)
             .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
