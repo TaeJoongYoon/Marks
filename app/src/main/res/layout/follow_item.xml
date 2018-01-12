@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textStyle="bold"
+            android:fontFamily="@font/bold_font"
             android:textSize="@dimen/default_textSize"
             android:layout_marginLeft="@dimen/default_padding"
             android:text="@{user.nickname}"

@@ -26,7 +26,7 @@
                 android:layout_gravity="center"
                 android:textSize="@dimen/profile_nickname_size"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:fontFamily="@font/bold_font"
                 android:text="@string/today_place"/>
         </android.support.v7.widget.Toolbar>
 
@@ -37,9 +37,10 @@
             android:id="@+id/text"
             android:gravity="center_horizontal"
             android:textSize="@dimen/small_textSize"
+            android:fontFamily="@font/regular_font"
             android:text="@string/place_comment"
-            android:layout_marginTop="@dimen/default_padding"
-            android:layout_marginBottom="@dimen/default_padding"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

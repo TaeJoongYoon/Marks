@@ -6,8 +6,8 @@ package com.yoon.memoria.Quiz;
 
 public class QuizContract {
 
-    interface View{
-
+    public interface View{
+        void check(int i);
     }
 
     interface Presenter{

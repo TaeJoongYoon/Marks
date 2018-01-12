@@ -4,7 +4,9 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.yoon.memoria.Comment.CommentContract;
 import com.yoon.memoria.Main.Fragment.Place.PlaceContract;
+import com.yoon.memoria.Quiz.QuizContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,14 @@ public abstract class BaseRecyclerViewAdapter<T, H extends RecyclerView.ViewHold
         this.context = context;
     }
 
+    public BaseRecyclerViewAdapter(Context context, QuizContract.View view){
+        this.context = context;
+    }
+
+    public BaseRecyclerViewAdapter(Context context, CommentContract.View view){
+        this.context = context;
+    }
+
     public Context getContext() {
         return context;
     }
@@ -64,6 +74,12 @@ public abstract class BaseRecyclerViewAdapter<T, H extends RecyclerView.ViewHold
         }
         this.arrayList.clear();
         this.arrayList.addAll(items);
+
+        notifyDataSetChanged();
+    }
+
+    public void addItem(T item){
+        this.arrayList.add(item);
 
         notifyDataSetChanged();
     }

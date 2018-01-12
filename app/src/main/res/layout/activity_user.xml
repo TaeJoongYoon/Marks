@@ -27,7 +27,7 @@
                 android:layout_gravity="center"
                 android:textSize="@dimen/profile_nickname_size"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:fontFamily="@font/bold_font"
                 android:id="@+id/user_nickname"/>
 
         </android.support.v7.widget.Toolbar>
@@ -67,6 +67,8 @@
                             android:id="@+id/user_profile_text"
                             android:textColor="@color/black"
                             android:layout_marginRight="@dimen/default_padding"
+                            android:fontFamily="@font/regular_font"
+                            android:includeFontPadding="false"
                             android:maxLines="3"/>
                     </LinearLayout>
                     <LinearLayout
@@ -81,12 +83,16 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:layout_weight="1"
+                            android:fontFamily="@font/regular_font"
+                            android:includeFontPadding="false"
                             android:id="@+id/user_follower"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:layout_weight="1"
+                            android:fontFamily="@font/regular_font"
+                            android:includeFontPadding="false"
                             android:id="@+id/user_following"/>
                     </LinearLayout>
                 </LinearLayout>

@@ -30,7 +30,7 @@
                     android:id="@+id/historyDate"
                     android:textSize="@dimen/profile_nickname_size"
                     android:textColor="@color/white"
-                    android:textStyle="bold"/>
+                    android:fontFamily="@font/bold_font"/>
 
         </android.support.v7.widget.Toolbar>
 

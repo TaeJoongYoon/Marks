@@ -1,6 +1,9 @@
 package com.yoon.memoria.Main.Fragment.Map;
 
+import android.app.Activity;
 import android.location.Location;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;

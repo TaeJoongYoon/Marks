@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -57,6 +58,7 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
     @Override
     public void nicknameEdit(){
         final EditText editText = new EditText(view.getAct());
+        editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         editText.setMaxLines(1);
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getAct());
         builder.setTitle("별명 수정하기");

@@ -20,6 +20,7 @@ public class Post {
     String filename;
     String content;
     int likeCount = 0;
+    int commentCount = 0;
     Map<String ,Boolean> likes = new HashMap<String, Boolean>();
 
     public Post() {}
@@ -45,6 +46,7 @@ public class Post {
         result.put("filename",filename);
         result.put("content",content);
         result.put("likeCount",likeCount);
+        result.put("commentCount",commentCount);
         result.put("likes",likes);
 
         return result;
@@ -120,5 +122,13 @@ public class Post {
 
     public void setImgUri(String imgUri) {
         this.imgUri = imgUri;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 }

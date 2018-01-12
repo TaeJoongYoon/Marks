@@ -60,7 +60,9 @@
         <service
             android:name=".GoogleService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".Comment.CommentActivity"></activity>
     </application>
 
 </manifest>

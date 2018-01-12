@@ -27,7 +27,7 @@
                 android:layout_gravity="center"
                 android:textSize="@dimen/profile_nickname_size"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:fontFamily="@font/bold_font"
                 android:id="@+id/follow_name"/>
         </android.support.v7.widget.Toolbar>
 

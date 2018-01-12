@@ -1,10 +1,12 @@
 package com.yoon.memoria.Main.Fragment.Place;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -77,13 +81,13 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
 
     @Override
     public void onStart() {
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addValueEventListener(this);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").addValueEventListener(this);
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).removeEventListener(this);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").removeEventListener(this);
         super.onStop();
     }
     public void initToolbar(){
@@ -99,7 +103,7 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
     }
     public void init(){
         binding.fab.setOnClickListener(
-                view -> getActivity().startActivity(new Intent(getActivity(), QuizActivity.class))
+                view -> quizShow()
         );
     }
 
@@ -121,7 +125,8 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
         List<Place> places = new ArrayList<>(0);
         for(DataSnapshot snapshot : dataSnapshot.getChildren()){
             Place place = snapshot.getValue(Place.class);
-            places.add(place);
+            if(place.getDate().equals(date))
+                places.add(place);
         }
         adapter.addItems(places);
     }
@@ -146,8 +151,27 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
     @Override
     public void delete(String Uid) {
         binding.placeProgressBar.setVisibility(View.VISIBLE);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).child(Uid).removeValue();
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(Uid).removeValue();
         Util.makeToast(getActivity(),"삭제되었습니다!");
         binding.placeProgressBar.setVisibility(View.GONE);
+    }
+
+    public void quizShow(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("오늘의 퀴즈");
+        builder.setMessage("퀴즈는 어제 방문장소를 토대로 출제됩니다.\n방문하신 장소가 부족할 경우 퀴즈를 푸는데에 제한이 있습니다.");
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        getActivity().startActivity(new Intent(getActivity(), QuizActivity.class));
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
     }
 }

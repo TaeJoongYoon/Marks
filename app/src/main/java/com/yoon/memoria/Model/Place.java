@@ -15,15 +15,17 @@ public class Place {
     private String Uid;
     String placeName;
     String placeID;
+    String date;
     String detail;
     String address;
 
     public Place(){}
 
-    public Place(String Uid, String placeName, String placeID, String detail, String address){
+    public Place(String Uid, String placeName, String placeID, String date, String detail, String address){
         this.Uid = Uid;
         this.placeName = placeName;
         this.placeID = placeID;
+        this.date = date;
         this.detail = detail;
         this.address = address;
     }
@@ -34,6 +36,7 @@ public class Place {
         result.put("Uid", Uid);
         result.put("placeName", placeName);
         result.put("placeID",placeID);
+        result.put("date",date);
         result.put("detail", detail);
         result.put("address",address);
 
@@ -78,5 +81,13 @@ public class Place {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
                 android:layout_gravity="center"
-                android:textStyle="bold"
+                android:fontFamily="@font/bold_font"
                 android:textColor="@color/white"
                 android:textSize="@dimen/profile_nickname_size"/>
         </android.support.v7.widget.Toolbar>
@@ -51,6 +51,7 @@
                     android:id="@+id/postEdit"
                     android:layout_below="@id/post_image"
                     android:layout_margin="@dimen/default_padding"
+                    android:fontFamily="@font/regular_font"
                     android:hint="글을 입력해주세요"
                     android:background="@null"/>
                 <Button
@@ -58,6 +59,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/post_btn"
                     android:text="업로드"
+                    android:fontFamily="@font/regular_font"
                     android:layout_below="@+id/postEdit"
                     android:layout_centerHorizontal="true"
                     android:textColor="@color/white"

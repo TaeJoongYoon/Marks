@@ -28,7 +28,7 @@
                     app:noPic="@{@drawable/ic_wallpaper_black_48dp}"/>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/list_photo_place"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/place_photo"
@@ -38,23 +38,30 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/place_name"
                         android:maxLines="1"
-                        android:layout_marginBottom="4dp"
                         android:text="@{place.placeName}"
-                        android:textStyle="bold"
+                        android:fontFamily="@font/bold_font"
+                        android:includeFontPadding="false"
+                        android:layout_marginBottom="3dp"
                         android:textColor="@color/black"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/place_time"
                         android:maxLines="1"
-                        android:layout_marginBottom="4dp"
+                        android:textSize="@dimen/small_textSize"
                         android:text="@{place.detail}"
+                        android:fontFamily="@font/regular_font"
+                        android:includeFontPadding="false"
+                        android:layout_marginBottom="3dp"
                         android:textColor="@color/black"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/place_address"
+                        android:textSize="@dimen/small_textSize"
                         android:text="@{place.address}"
+                        android:fontFamily="@font/regular_font"
+                        android:includeFontPadding="false"
                         android:textColor="@color/black"/>
                 </LinearLayout>
             </RelativeLayout>

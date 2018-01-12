@@ -1,8 +1,17 @@
 package com.yoon.memoria.Main.Fragment.Map;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -27,7 +36,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.R;
 import com.yoon.memoria.UidSingleton;
+import com.yoon.memoria.Util.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,10 +70,12 @@ public class MapPresenter implements MapContract.Presenter {
         Post post = dataSnapshot.getValue(Post.class);
 
         LatLng latLng = new LatLng(post.getLatitude(),post.getLongitude());
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(dataSnapshot.getKey());
         markerOptions.snippet("POST");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(265));
         Marker marker = googleMap.addMarker(markerOptions);
         markers.add(marker);
     }
@@ -157,8 +170,21 @@ public class MapPresenter implements MapContract.Presenter {
         String date = dateFormat.format(now);
         String detail = detailFormat.format(now);
 
-        String KEY = databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).push().getKey();
-        Place place = new Place(KEY, name, ID, detail, address);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).child(KEY).setValue(place);
+        String KEY = databaseReference.child("users").child(uidSingleton.getUid()).child("places").push().getKey();
+        Place place = new Place(KEY, name, ID, date, detail, address);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(KEY).setValue(place);
     }
+
+    private Bitmap createDrawableFromView(Context context, View view) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels); view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+
 }

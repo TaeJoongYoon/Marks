@@ -40,8 +40,10 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.yoon.memoria.Comment.CommentActivity;
 import com.yoon.memoria.Model.Post;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.Quiz.QuizActivity;
 import com.yoon.memoria.StorageSingleton;
 import com.yoon.memoria.R;
 import com.yoon.memoria.UidSingleton;
@@ -79,6 +81,11 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         init();
 
         binding.readProgress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         databaseReference.child("posts").child(postUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -92,7 +99,6 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
             }
         });
     }
-
 
     public void initToolbar(){
         setSupportActionBar(binding.readingToolbar);
@@ -110,6 +116,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         binding.readBtnEdit.setOnClickListener(this);
         binding.readBtnLike.setOnClickListener(this);
         binding.readLocation.setOnClickListener(this);
+        binding.readBtnComment.setOnClickListener(this);
     }
 
     public void UISetting(){
@@ -131,18 +138,20 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         Util.loadImage(binding.readImage,post.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
         binding.readTvLike.setText(""+post.getLikeCount());
         binding.readTvContent.setText(post.getContent());
-        binding.readLocation.setBackgroundResource(R.drawable.ic_location_on_black_48dp);
+        binding.readLocation.setBackgroundResource(R.drawable.ic_location_on_white_48dp);
         if (post.getLikes().containsKey(uidSingleton.getUid())) {
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
         } else {
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_border_black_48dp);
         }
+        binding.readBtnComment.setBackgroundResource(R.drawable.ic_border_color_white_48dp);
     }
 
     @Override
     public void onCompleted(DataSnapshot dataSnapshot){
         Post post = dataSnapshot.getValue(Post.class);
         binding.readTvLike.setText(""+post.getLikeCount());
+        binding.readTvComment.setText(""+post.getCommentCount());
         if (post.getLikes().containsKey(uidSingleton.getUid()))
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
         else
@@ -171,14 +180,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                 binding.readEtContent.setText(temp);
                 break;
             case R.id.read_delete:
-                databaseReference.child("posts").child(postUid).removeValue();
-                databaseReference.child("users").child(uidSingleton.getUid()).child("posts").child(postUid).removeValue();
-                storageSingleton.getStorageReference().child(post.getFilename()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        finish();
-                    }
-                });
+                deleteShow();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -205,6 +207,13 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                 break;
             case R.id.read_btn_like:
                 presenter.onStarClicked(databaseReference.child("posts").child(postUid));
+                break;
+            case R.id.read_btn_comment:
+                Intent intent1 = new Intent(ReadingActivity.this, CommentActivity.class);
+                intent1.putExtra("userUid",post.getUid());
+                intent1.putExtra("content",post.getContent());
+                intent1.putExtra("postUid",postUid);
+                startActivity(intent1);
                 break;
             case R.id.read_location:
                 final Dialog dialog = new Dialog(this);
@@ -235,5 +244,31 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         googleMap.addMarker(markerOptions);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+    }
+
+    public void deleteShow(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("게시글 삭제");
+        builder.setMessage("정말 삭제하시겠습니까?");
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        databaseReference.child("posts").child(postUid).removeValue();
+                        databaseReference.child("users").child(uidSingleton.getUid()).child("posts").child(postUid).removeValue();
+                        storageSingleton.getStorageReference().child(post.getFilename()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                finish();
+                            }
+                        });
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
     }
 }

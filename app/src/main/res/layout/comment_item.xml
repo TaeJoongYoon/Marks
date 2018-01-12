@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="comment"
+            type="com.yoon.memoria.Model.Comment">
+
+        </variable>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/default_padding">
+
+        <com.yoon.memoria.Custom.CircleImageView
+            android:layout_width="@dimen/list_item_avatar_size"
+            android:layout_height="@dimen/list_item_avatar_size"
+            android:id="@+id/follow_profile"
+            app:photoUid="@{comment.Uid}"
+            app:noPhoto="@{@drawable/ic_face_black_48dp}"/>
+
+        <TextView
+            android:id="@+id/follow_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:fontFamily="@font/bold_font"
+            android:textSize="@dimen/default_textSize"
+            android:layout_marginLeft="@dimen/default_padding"
+            app:userUid="@{comment.Uid}"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:fontFamily="@font/noto_sans_demi_light"
+            android:textSize="@dimen/default_textSize"
+            android:layout_marginLeft="@dimen/default_padding"
+            android:text="@{comment.content}"/>
+    </LinearLayout>
+</layout>

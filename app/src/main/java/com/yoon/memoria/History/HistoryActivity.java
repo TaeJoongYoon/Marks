@@ -76,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
         binding.historyToolbarRecyclerview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         adapter = new HistoryRecyclerViewAdapter(this);
         binding.historyToolbarRecyclerview.setAdapter(adapter);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").child(date).addListenerForSingleValueEvent(this);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("places").addListenerForSingleValueEvent(this);
     }
 
     @Override
@@ -96,12 +96,15 @@ public class HistoryActivity extends AppCompatActivity implements ValueEventList
         List<Place> places = new ArrayList<>(0);
         for(DataSnapshot snapshot : dataSnapshot.getChildren()){
             Place place = snapshot.getValue(Place.class);
-            places.add(place);
-            count++;
+            if (place.getDate().equals(date)){
+                places.add(place);
+                count++;
+            }
         }
         if(count == 0)
             Util.makeToast(this,"방문하신 장소가 없습니다!");
-        adapter.addItems(places);
+        else
+            adapter.addItems(places);
     }
 
     @Override
