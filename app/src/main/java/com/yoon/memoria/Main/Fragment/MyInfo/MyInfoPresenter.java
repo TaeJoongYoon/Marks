@@ -21,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -45,38 +46,20 @@ import java.util.Map;
  * Created by Yoon on 2017-11-10.
  */
 
-public class MyInfoPresenter implements MyInfoContract.Presenter {
+public class MyInfoPresenter implements MyInfoContract.Presenter,ValueEventListener {
     private MyInfoContract.View view;
     private UidSingleton uidSingleton = UidSingleton.getInstance();
 
     private String filename;
+    private List<String> nicks = new ArrayList<>(0);
 
     public MyInfoPresenter(MyInfoContract.View view){
         this.view = view;
     }
 
     @Override
-    public void nicknameEdit(){
-        final EditText editText = new EditText(view.getAct());
-        editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        editText.setMaxLines(1);
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getAct());
-        builder.setTitle("별명 수정하기");
-        builder.setMessage("수정하실 별명을 입력해주세요.");
-        builder.setView(editText);
-        builder.setPositiveButton("확인",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        view.nicknameEdit(editText);
-                    }
-                });
-        builder.setNegativeButton("취소",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-        builder.show();
+    public void nicknameEdit(DatabaseReference databaseReference){
+        databaseReference.addListenerForSingleValueEvent(this);
     }
 
     @Override
@@ -163,5 +146,47 @@ public class MyInfoPresenter implements MyInfoContract.Presenter {
     @Override
     public String getFilename(){
         return filename;
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        nicks.clear();
+        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+            User user = snapshot.getValue(User.class);
+            nicks.add(user.getNickname());
+        }
+        final EditText editText = new EditText(view.getAct());
+        editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        editText.setMaxLines(1);
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getAct());
+        builder.setTitle("별명 수정하기");
+        builder.setMessage("수정하실 별명을 입력해주세요.");
+        builder.setView(editText);
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(editText.getText().toString().length() < 2 ||
+                                editText.getText().toString().length() >8)
+                            Util.makeToast(view.getAct(),"별명은 2글자 이상 8글자 이하 입니다!");
+                        else{
+                            if(nicks.contains(editText.getText().toString()))
+                                Util.makeToast(view.getAct(),"이미 존재하는 닉네임입니다!");
+                            else
+                                view.nicknameEdit(editText);
+                        }
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
     }
 }

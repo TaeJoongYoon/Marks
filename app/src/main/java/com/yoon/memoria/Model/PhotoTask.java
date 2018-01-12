@@ -44,6 +44,7 @@ public class PhotoTask extends AsyncTask<String, Void, PhotoTask.AttributedPhoto
                 // Load a scaled bitmap for this photo.
                 Bitmap image = photo.getScaledPhoto(googleApiSingleton.getGoogleApiClient(), mWidth, mHeight).await()
                         .getBitmap();
+
                 attributedPhoto = new AttributedPhoto(attribution, image);
             }
             // Release the PlacePhotoMetadataBuffer.

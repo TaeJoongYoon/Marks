@@ -21,6 +21,8 @@ public class User {
     Map<String, Boolean> following = new HashMap<>();
     int followerCount = 0;
     Map<String, Boolean> follower = new HashMap<>();
+    int quizCount = 0;
+    int ansCount = 0;
 
     public User(){}
 
@@ -42,6 +44,8 @@ public class User {
         result.put("following",following);
         result.put("followerCount",followerCount);
         result.put("follower",follower);
+        result.put("quizCount",quizCount);
+        result.put("ansCount",ansCount);
 
         return result;
     }
@@ -116,5 +120,21 @@ public class User {
 
     public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    public int getQuizCount() {
+        return quizCount;
+    }
+
+    public void setQuizCount(int quizCount) {
+        this.quizCount = quizCount;
+    }
+
+    public int getAnsCount() {
+        return ansCount;
+    }
+
+    public void setAnsCount(int ansCount) {
+        this.ansCount = ansCount;
     }
 }

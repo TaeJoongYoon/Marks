@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -138,6 +139,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
         Util.loadImage(binding.readImage,post.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
         binding.readTvLike.setText(""+post.getLikeCount());
         binding.readTvContent.setText(post.getContent());
+        binding.readTvComment.setText(""+post.getCommentCount());
         binding.readLocation.setBackgroundResource(R.drawable.ic_location_on_white_48dp);
         if (post.getLikes().containsKey(uidSingleton.getUid())) {
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
@@ -151,7 +153,6 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
     public void onCompleted(DataSnapshot dataSnapshot){
         Post post = dataSnapshot.getValue(Post.class);
         binding.readTvLike.setText(""+post.getLikeCount());
-        binding.readTvComment.setText(""+post.getCommentCount());
         if (post.getLikes().containsKey(uidSingleton.getUid()))
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_white_48dp);
         else
@@ -241,9 +242,10 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(265));
         googleMap.addMarker(markerOptions);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     public void deleteShow(){

@@ -92,14 +92,19 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
         Util.loadImage(binding.userProfile,user.getImgUri(), ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_face_black_48dp));
 
-        if (user.getFollower().containsKey(uidSingleton.getUid())) {
+        if (user.getFollower().containsKey(uidSingleton.getUid()) || user.getUid().equals(uidSingleton.getUid())) {
             binding.userFollow.setBackgroundResource(R.drawable.followed);
             binding.userFollow.setText("따라가는 중");
             binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
+            if(user.getQuizCount() == 0)
+                binding.userQuiz.setText("정답률 " + user.getQuizCount());
+            else
+                binding.userQuiz.setText("정답률 " + user.getAnsCount()*100/user.getQuizCount() + "%");
         } else {
             binding.userFollow.setBackgroundResource(R.drawable.custom_button);
             binding.userFollow.setText("따라가기");
             binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.white));
+            binding.userQuiz.setText("정답률 비공개");
         }
         binding.userFollow.setOnClickListener(this);
         binding.userFollower.setOnClickListener(this);
@@ -143,15 +148,20 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
         binding.userFollower.setText("팔로워 "+user.getFollowerCount());
         presenter.onFollowed(databaseReference.child("users").child(uidSingleton.getUid()), dataSnapshot, databaseReference);
 
-        if (user.getFollower().containsKey(uidSingleton.getUid())) {
+        if (user.getFollower().containsKey(uidSingleton.getUid()) || user.getUid().equals(uidSingleton.getUid())) {
             binding.userFollow.setBackgroundResource(R.drawable.followed);
             binding.userFollow.setText("따라가는 중");
             binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
+            if(user.getQuizCount() == 0)
+                binding.userQuiz.setText("정답률 " + user.getQuizCount());
+            else
+                binding.userQuiz.setText("정답률 " + user.getAnsCount()*100/user.getQuizCount() + "%");
         }
         else {
             binding.userFollow.setBackgroundResource(R.drawable.custom_button);
             binding.userFollow.setText("따라가기");
             binding.userFollow.setTextColor(getApplicationContext().getResources().getColor(R.color.white));
+            binding.userQuiz.setText("정답률 비공개");
         }
     }
 

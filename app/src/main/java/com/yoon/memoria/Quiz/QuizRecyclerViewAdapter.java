@@ -12,6 +12,7 @@ import com.yoon.memoria.Main.Fragment.Place.PlaceRecyclerViewAdapter;
 import com.yoon.memoria.Model.Place;
 import com.yoon.memoria.R;
 import com.yoon.memoria.databinding.PlaceItemBinding;
+import com.yoon.memoria.databinding.QuizItemBinding;
 
 /**
  * Created by Yoon on 2018-01-12.
@@ -35,7 +36,7 @@ public class QuizRecyclerViewAdapter extends BaseRecyclerViewAdapter<Place,QuizR
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.place_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.quiz_item, parent, false);
         return new QuizRecyclerViewAdapter.ViewHolder(view);
     }
 
@@ -46,7 +47,7 @@ public class QuizRecyclerViewAdapter extends BaseRecyclerViewAdapter<Place,QuizR
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        PlaceItemBinding binding;
+        QuizItemBinding binding;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -28,6 +28,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.tedpark.tedpermission.rx2.TedRx2Permission;
 import com.yoon.memoria.EventBus.ActivityResultEvent;
 import com.yoon.memoria.EventBus.BusProvider;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPagerAdapter viewPagerAdapter;
     private MenuItem prevBottomNavigation;
     private GoogleApiSingleton googleApiSingleton = GoogleApiSingleton.getInstance();
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
     private MapFragment mapFragment;
     private PlaceFragment placeFragment;
@@ -207,6 +210,13 @@ public class MainActivity extends AppCompatActivity {
                     }, () -> {
                     });
         }
+    }
+
+
+    @Override
+    public void onLowMemory(){
+        super.onLowMemory();
+        unbindService(serviceConnection);
     }
 
     @Override

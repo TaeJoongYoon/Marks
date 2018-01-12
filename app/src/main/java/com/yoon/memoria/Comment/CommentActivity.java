@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -58,11 +59,26 @@ public class CommentActivity extends AppCompatActivity implements CommentContrac
         postUid = intent.getStringExtra("postUid");
         binding.commentBtn.setOnClickListener(view -> {
             String content = binding.commentText.getText().toString();
-            String KEY = databaseReference.child("posts").child(postUid).child("comments").push().getKey();
+            if(content.length()>0) {
+                String KEY = databaseReference.child("posts").child(postUid).child("comments").push().getKey();
+                Comment comment = new Comment(uidSingleton.getUid(), KEY, content);
+                databaseReference.child("posts").child(postUid).child("comments").child(KEY).setValue(comment);
 
-            Comment comment = new Comment(uidSingleton.getUid(),KEY,content);
+                databaseReference.child("posts").child(postUid).child("commentCount").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int count = dataSnapshot.getValue(Integer.class);
+                        count++;
+                        databaseReference.child("posts").child(postUid).child("commentCount").setValue(count);
+                    }
 
-            databaseReference.child("posts").child(postUid).child("comments").child(KEY).setValue(comment);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+
+                binding.commentText.setText("");
+            }
         });
     }
 
@@ -110,6 +126,7 @@ public class CommentActivity extends AppCompatActivity implements CommentContrac
 
     @Override
     public void toUser(String Uid) {
+        Log.e("Comment","click");
         Intent intent = new Intent(CommentActivity.this, UserActivity.class);
         intent.putExtra("Uid",Uid);
         startActivity(intent);
@@ -117,8 +134,21 @@ public class CommentActivity extends AppCompatActivity implements CommentContrac
 
     @Override
     public void delete(String Uid, String commentUid) {
-        if(Uid.equals(uidSingleton.getUid())){
-               databaseReference.child("posts").child(postUid).child("comments").child(commentUid).removeValue();
+        if(Uid.equals(uidSingleton.getUid()) || Uid.equals(Uid)){
+            databaseReference.child("posts").child(postUid).child("comments").child(commentUid).removeValue();
+            databaseReference.child("posts").child(postUid).child("commentCount").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    int count = dataSnapshot.getValue(Integer.class);
+                    count--;
+                    databaseReference.child("posts").child(postUid).child("commentCount").setValue(count);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            Util.makeToast(this,"삭제되었습니다!");
         }
     }
 }

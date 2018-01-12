@@ -87,7 +87,8 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
 
     @Override
     public void onStop() {
-        databaseReference.child("users").child(uidSingleton.getUid()).child("places").removeEventListener(this);
+        if(uidSingleton.getUser() != null)
+            databaseReference.child("users").child(uidSingleton.getUid()).child("places").removeEventListener(this);
         super.onStop();
     }
     public void initToolbar(){
@@ -159,7 +160,7 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
     public void quizShow(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("오늘의 퀴즈");
-        builder.setMessage("퀴즈는 어제 방문장소를 토대로 출제됩니다.\n방문하신 장소가 부족할 경우 퀴즈를 푸는데에 제한이 있습니다.");
+        builder.setMessage("퀴즈를 풀기 위해선 최소 4개의 방문장소가 있어야 합니다!");
         builder.setPositiveButton("확인",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

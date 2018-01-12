@@ -31,7 +31,7 @@ public class MyInfoContract {
     }
 
     public interface Presenter{
-        void nicknameEdit();
+        void nicknameEdit(DatabaseReference databaseReference);
         void contentEdit();
         void profileEdit();
         void profile_to_firebase(String imgUri, String filename);

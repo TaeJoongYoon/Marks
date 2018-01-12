@@ -47,7 +47,8 @@ public class ReadingPresenter implements ReadingContract.Presenter {
                     post.getLikes().put(uidSingleton.getUid(), true);
                 }
 
-                mutableData.setValue(post);
+                mutableData.child("likes").setValue(post.getLikes());
+                mutableData.child("likeCount").setValue(post.getLikeCount());
                 return Transaction.success(mutableData);
             }
 

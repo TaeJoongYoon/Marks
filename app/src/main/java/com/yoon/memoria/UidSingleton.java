@@ -1,6 +1,7 @@
 package com.yoon.memoria;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by Yoon on 2018-01-10.
@@ -9,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class UidSingleton {
 
     private static UidSingleton uidSingleton;
-    private String uid = FirebaseAuth.getInstance().getUid();
 
     public static UidSingleton getInstance(){
         if (uidSingleton == null)
@@ -18,6 +18,8 @@ public class UidSingleton {
     }
 
     public String getUid(){
-        return uid;
+        return FirebaseAuth.getInstance().getUid();
     }
+
+    public FirebaseUser getUser(){ return FirebaseAuth.getInstance().getCurrentUser();}
 }

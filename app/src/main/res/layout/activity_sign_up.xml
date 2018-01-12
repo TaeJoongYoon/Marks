@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="280dp"
+            android:layout_width="260dp"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:gravity="center"
@@ -25,11 +25,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="@dimen/default_padding">
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_face_black_48dp"/>
 
                 <EditText
                     android:id="@+id/signup_et_ID"
@@ -47,11 +42,6 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="@dimen/default_padding">
 
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_face_black_48dp"/>
-
                 <EditText
                     android:id="@+id/signup_et_NAME"
                     android:layout_width="match_parent"
@@ -68,11 +58,6 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="@dimen/default_padding">
 
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_face_black_48dp"/>
-
                 <EditText
                     android:id="@+id/signup_et_PW"
                     android:layout_width="match_parent"
@@ -88,11 +73,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="@dimen/default_padding">
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_face_black_48dp"/>
 
                 <EditText
                     android:id="@+id/signup_et_PW2"

@@ -23,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Model.PhotoTask;
 import com.yoon.memoria.Model.User;
+import com.yoon.memoria.MyApplication;
 import com.yoon.memoria.R;
 
 /**
@@ -40,8 +41,8 @@ public class Util {
         Toast.makeText(context,text, Toast.LENGTH_SHORT).show();
     }
 
-    public static int dpToPixel(Context context, int dp){
-        int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    public static int dpToPixel(int dp){
+        int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, MyApplication.getAppContext().getResources().getDisplayMetrics());
         return  px;
     }
 
@@ -65,7 +66,7 @@ public class Util {
 
     @SuppressLint("StaticFieldLeak")
     public static void placePhotosTask(ImageView imageView, String placeId, Drawable drawable) {
-        new PhotoTask(imageView.getWidth(), imageView.getHeight()) {
+        new PhotoTask(dpToPixel(120), dpToPixel(120)) {
             @Override
             protected void onPreExecute() {
                 imageView.setImageDrawable(drawable);

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.firebase.database.DataSnapshot;
@@ -14,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.yoon.memoria.Main.Fragment.Place.PlaceRecyclerViewAdapter;
 import com.yoon.memoria.Model.Place;
+import com.yoon.memoria.Model.User;
 import com.yoon.memoria.R;
 import com.yoon.memoria.UidSingleton;
 import com.yoon.memoria.Util.Util;
@@ -34,6 +36,8 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
 
     private int ANSWER;
 
+    public int quizCount;
+    public int ansCount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,15 +66,34 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
 
     public void setData(List<Place> places, int answer){
         List<Place> questions = places.subList(0,4);
-        binding.quizQuestion.setText(questions.get(answer).getDetail() + "에\n 어디에 방문하셨습니까?");
+        binding.quizQuestion.setText(questions.get(answer).getDetail() + "쯤에");
+        binding.quizQuestion1.setText(" 어디에 방문하셨습니까?");
         adapter.addItems(questions);
     }
     @Override
     public void onStart() {
+        databaseReference.child("users").child(uidSingleton.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                quizCount = user.getQuizCount();
+                ansCount = user.getAnsCount();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
         databaseReference.child("users").child(uidSingleton.getUid()).child("places").addListenerForSingleValueEvent(this);
         super.onStart();
     }
 
+    @Override
+    public void onDestroy() {
+        databaseReference.child("users").child(uidSingleton.getUid()).child("quizCount").setValue(quizCount);
+        databaseReference.child("users").child(uidSingleton.getUid()).child("ansCount").setValue(ansCount);
+        super.onDestroy();
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -94,8 +117,8 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
             Util.makeToast(this,"방문하신 장소가 부족합니다!");
         else {
             Collections.shuffle(places);
+            ANSWER = (int)(Math.random()*4);
             setData(places, ANSWER);
-            ANSWER = (int)(Math.random()*4)+1;
         }
     }
 
@@ -106,9 +129,11 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
 
     @Override
     public void check(int i) {
+        quizCount++;
         if(ANSWER == i) {
             Util.makeToast(this, "정답입니다!");
             databaseReference.child("users").child(uidSingleton.getUid()).child("places").addListenerForSingleValueEvent(this);
+            ansCount++;
         }
         else
             Util.makeToast(this,"오답입니다!ㅠ");

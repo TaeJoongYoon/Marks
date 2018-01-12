@@ -52,7 +52,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@drawable/line_divider"
+            android:background="@drawable/comment_divider"
             android:layout_below="@id/top"
             android:layout_marginBottom="2dp"
             android:id="@+id/line1">
@@ -69,7 +69,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@drawable/line_divider"
+            android:background="@drawable/comment_divider"
             android:layout_above="@+id/line4"
             android:layout_marginBottom="4dp"
             android:id="@+id/line3">

@@ -3,11 +3,15 @@ package com.yoon.memoria.Comment;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.yoon.memoria.Custom.BaseRecyclerViewAdapter;
+import com.yoon.memoria.FollowList.FollowRecyclerViewAdapter;
 import com.yoon.memoria.Model.Comment;
+import com.yoon.memoria.R;
 import com.yoon.memoria.databinding.CommentItemBinding;
 
 /**
@@ -21,6 +25,8 @@ public class CommentRecyclerViewAdapter extends BaseRecyclerViewAdapter<Comment,
     public CommentRecyclerViewAdapter(Context context, CommentContract.View view) {
         super(context);
         this.view = view;
+        setOnItemClickListener(this);
+        setOnItemLongClickListener(this);
     }
 
     @Override
@@ -31,7 +37,8 @@ public class CommentRecyclerViewAdapter extends BaseRecyclerViewAdapter<Comment,
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_item,parent,false);
+        return new ViewHolder(view);
     }
 
     @Override

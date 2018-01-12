@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/default_padding"
-                card_view:cardCornerRadius="6dp">
+                card_view:cardCornerRadius="7dp">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -94,6 +94,14 @@
                             android:fontFamily="@font/regular_font"
                             android:includeFontPadding="false"
                             android:id="@+id/myinfo_following"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/regular_font"
+                            android:includeFontPadding="false"
+                            android:id="@+id/myinfo_quiz"/>
                     </LinearLayout>
                 </LinearLayout>
                 </FrameLayout>

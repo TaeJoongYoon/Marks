@@ -9,6 +9,8 @@ public class Comment {
     private String commentUid;
     private String content;
 
+    public Comment(){}
+
     public Comment(String Uid,String commentUid, String content){
         this.Uid = Uid;
         this.commentUid = commentUid;
