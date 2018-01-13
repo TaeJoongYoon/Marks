@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" android:protectionLevel="signature"/>
 
     <application
         android:name=".MyApplication"
@@ -53,7 +54,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/debug_key" />
+            android:value="AIzaSyBGKRSCNLpKUqwV4M3cdScrUuZ6XvY7eLE" />
 
         <activity android:name=".User.UserActivity" />
         <activity android:name=".FollowList.FollowListActivity" />

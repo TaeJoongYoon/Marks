@@ -151,12 +151,13 @@ public class MapPresenter implements MapContract.Presenter {
                 }
                 placeLikelihoods.release();
 
-                if (LikelyPlaceNames[0].equals(view.getPreviousPlace())){
-                    setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0], LikelyPlaceAddresses[0]);
-                    view.setPreviousPlace(null);
+                if(LikelyPlaceNames[0] != null) {
+                    if (LikelyPlaceNames[0].equals(view.getPreviousPlace())) {
+                        setCurrentPlace(databaseReference, LikelyPlaceNames[0], LikelyPlaceIDs[0], LikelyPlaceAddresses[0]);
+                        view.setPreviousPlace(null);
+                    } else
+                        view.setPreviousPlace(LikelyPlaceNames[0]);
                 }
-                else
-                    view.setPreviousPlace(LikelyPlaceNames[0]);
             }
         });
     }
