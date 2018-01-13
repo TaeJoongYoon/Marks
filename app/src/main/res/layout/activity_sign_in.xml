@@ -20,40 +20,34 @@
             android:gravity="center"
             android:layout_centerInParent="true"
             >
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/default_padding">
+                android:background="@drawable/ic_title"/>
 
                 <EditText
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_padding"
                     android:hint="이메일을 입력해주세요"
                     android:fontFamily="@font/regular_font"
                     android:textSize="@dimen/default_textSize"
                     android:id="@+id/signin_et_ID"
+                    android:includeFontPadding="false"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/default_padding">
-
                 <EditText
                     android:id="@+id/signin_et_PW"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_padding"
+                    android:includeFontPadding="false"
                     android:hint="비밀번호를 입력해주세요"
                     android:fontFamily="@font/regular_font"
                     android:textSize="@dimen/default_textSize"
                     android:inputType="textPassword"
                     android:maxLines="1"/>
-            </LinearLayout>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,5 +73,14 @@
             android:layout_centerInParent="true"
             android:visibility="gone"
             />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:text="@string/personal"
+            android:id="@+id/personal"
+            android:textColor="#85000000"/>
     </RelativeLayout>
 </layout>

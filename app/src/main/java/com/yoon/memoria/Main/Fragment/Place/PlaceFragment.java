@@ -160,7 +160,7 @@ public class PlaceFragment extends Fragment implements ValueEventListener, DateP
     public void quizShow(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("오늘의 퀴즈");
-        builder.setMessage("퀴즈를 풀기 위해선 최소 4개의 방문장소가 있어야 합니다!");
+        builder.setMessage("퀴즈를 풀기 위해선 겹치지 않는 최소 4개의 방문장소가 있어야 합니다!");
         builder.setPositiveButton("확인",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

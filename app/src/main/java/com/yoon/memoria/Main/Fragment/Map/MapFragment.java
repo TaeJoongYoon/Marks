@@ -360,7 +360,6 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         presenter.setCurrentLocation(googleMap,DEFAULT_LOCATION,location);
         if(location != null)
             presenter.searchCurrentPlaces(googleApiClient,databaseReference);
-        Log.i(TAG, "onLocationChanged call..");
     }
 
     @Override

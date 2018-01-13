@@ -53,7 +53,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBKhqvguixfw97_20QAT8kcILelZRottI0" />
+            android:value="@string/debug_key" />
 
         <activity android:name=".User.UserActivity" />
         <activity android:name=".FollowList.FollowListActivity" />

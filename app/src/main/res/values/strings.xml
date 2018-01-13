@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">LEMON</string>
+    <string name="app_name">Marks</string>
+
+    <string name="debug_key">AIzaSyBKhqvguixfw97_20QAT8kcILelZRottI0</string>
+    <string name="release_key">AIzaSyCenghi7Envpi-h3hTZ_IQdOyIdKnJKtRY</string>
+    <string name="personal"><u>개인정보처리방침</u></string>
 
     <string name="rationale_title">권한 요청</string>
     <string name="rationale_location_message"> 서비스를 이용하기 위해서는 <b>위치권한</b>이 필요합니다.</string>

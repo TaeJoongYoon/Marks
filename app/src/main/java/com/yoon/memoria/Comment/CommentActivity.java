@@ -134,7 +134,7 @@ public class CommentActivity extends AppCompatActivity implements CommentContrac
 
     @Override
     public void delete(String Uid, String commentUid) {
-        if(Uid.equals(uidSingleton.getUid()) || Uid.equals(Uid)){
+        if(Uid.equals(uidSingleton.getUid()) || this.Uid.equals(uidSingleton.getUid())){
             databaseReference.child("posts").child(postUid).child("comments").child(commentUid).removeValue();
             databaseReference.child("posts").child(postUid).child("commentCount").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

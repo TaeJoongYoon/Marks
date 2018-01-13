@@ -5,9 +5,7 @@
 
     <item android:drawable="@color/colorPrimaryLight" />
 
-    <item>
-        <bitmap android:src="@mipmap/ic_launcher_round"
-            android:gravity="center" />
-    </item>
+    <item android:drawable="@drawable/ic_title"
+        android:gravity="center" />
 
 </layer-list>

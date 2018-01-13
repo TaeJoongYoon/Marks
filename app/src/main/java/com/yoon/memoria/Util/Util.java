@@ -32,6 +32,7 @@ import com.yoon.memoria.R;
 
 public class Util {
 
+    public static final int SIGN_UP = 1001;
     public static final int EDIT_OODE = 1110;
     public static final int POST_CODE = 1111;
     public static final int GALLERY_CODE=1112;

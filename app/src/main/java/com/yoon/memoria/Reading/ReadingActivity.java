@@ -70,6 +70,8 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
     private Intent intent;
     private String postUid;
 
+    private String content;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +149,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
             binding.readBtnLike.setBackgroundResource(R.drawable.ic_star_border_black_48dp);
         }
         binding.readBtnComment.setBackgroundResource(R.drawable.ic_border_color_white_48dp);
+        content = post.getContent();
     }
 
     @Override
@@ -203,6 +206,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
                 binding.readTvContent.setText(temp);
                 binding.readBtnEdit.setVisibility(View.GONE);
 
+                content = temp;
                 databaseReference.child("posts").child(postUid).child("content").setValue(temp);
                 databaseReference.child("users").child(uidSingleton.getUid()).child("posts").child(postUid).child("content").setValue(temp);
                 break;
@@ -212,7 +216,7 @@ public class ReadingActivity extends AppCompatActivity implements ReadingContrac
             case R.id.read_btn_comment:
                 Intent intent1 = new Intent(ReadingActivity.this, CommentActivity.class);
                 intent1.putExtra("userUid",post.getUid());
-                intent1.putExtra("content",post.getContent());
+                intent1.putExtra("content",content);
                 intent1.putExtra("postUid",postUid);
                 startActivity(intent1);
                 break;

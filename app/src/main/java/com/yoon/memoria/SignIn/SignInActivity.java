@@ -3,6 +3,7 @@ package com.yoon.memoria.SignIn;
 import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -46,13 +47,19 @@ public class SignInActivity extends AppCompatActivity implements SignInContract.
             btn_call();
         });
 
-        binding.signinTvSignup.setOnClickListener(view -> startActivityForResult(new Intent(SignInActivity.this,SignUpActivity.class),1));
+        binding.signinTvSignup.setOnClickListener(view -> startActivityForResult(new Intent(SignInActivity.this,SignUpActivity.class),Util.SIGN_UP));
+
+        binding.personal.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://blog.naver.com/xownddl1234/221184287453"));
+            startActivity(intent);
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
+        if (requestCode == Util.SIGN_UP) {
             if(resultCode == Activity.RESULT_OK){
                 username = data.getStringExtra("ID");
                 password = data.getStringExtra("PW");;

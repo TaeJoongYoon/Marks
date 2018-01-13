@@ -212,13 +212,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    public void onLowMemory(){
-        super.onLowMemory();
-        unbindService(serviceConnection);
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -20,69 +20,59 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/default_padding">
+                android:background="@drawable/ic_title"/>
 
                 <EditText
                     android:id="@+id/signup_et_ID"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:layout_marginBottom="8dp"
                     android:hint="이메일을 입력해주세요"
+                    android:includeFontPadding="false"
                     android:fontFamily="@font/regular_font"
                     android:textSize="@dimen/default_textSize"
                     android:inputType="textEmailAddress"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/default_padding">
 
                 <EditText
                     android:id="@+id/signup_et_NAME"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:layout_marginBottom="8dp"
                     android:hint="별명을 입력해주세요(2 ~ 8글자)"
+                    android:includeFontPadding="false"
                     android:fontFamily="@font/regular_font"
                     android:textSize="@dimen/default_textSize"
                     android:inputType="text"/>
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/default_padding">
 
                 <EditText
                     android:id="@+id/signup_et_PW"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
                     android:textSize="@dimen/default_textSize"
                     android:fontFamily="@font/regular_font"
+                    android:includeFontPadding="false"
                     android:hint="비밀번호를 입력해주세요(최소 8글자)"
+                    android:layout_marginBottom="8dp"
                     android:inputType="textPassword"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/default_padding">
 
                 <EditText
                     android:id="@+id/signup_et_PW2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:layout_marginBottom="8dp"
                     android:textSize="14dp"
                     android:fontFamily="@font/regular_font"
+                    android:includeFontPadding="false"
                     android:hint="한번 더 입력해주세요"
                     android:inputType="textPassword"/>
-            </LinearLayout>
 
                 <Button
                     android:id="@+id/signup_btn"

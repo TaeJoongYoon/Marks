@@ -64,12 +64,12 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
         binding.quizRecyclerView.setAdapter(adapter);
     }
 
-    public void setData(List<Place> places, int answer){
-        List<Place> questions = places.subList(0,4);
+    public void setData(List<Place> questions, int answer){
         binding.quizQuestion.setText(questions.get(answer).getDetail() + "쯤에");
         binding.quizQuestion1.setText(" 어디에 방문하셨습니까?");
         adapter.addItems(questions);
     }
+
     @Override
     public void onStart() {
         databaseReference.child("users").child(uidSingleton.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -89,12 +89,6 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
     }
 
     @Override
-    public void onDestroy() {
-        databaseReference.child("users").child(uidSingleton.getUid()).child("quizCount").setValue(quizCount);
-        databaseReference.child("users").child(uidSingleton.getUid()).child("ansCount").setValue(ansCount);
-        super.onDestroy();
-    }
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id)
@@ -109,17 +103,30 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         List<Place> places = new ArrayList<>(0);
+        List<String> placenames = new ArrayList<>(0);
+        List<Place> questions = new ArrayList<>(0);
+        int i = 0;
+
         for(DataSnapshot snapshot : dataSnapshot.getChildren()){
             Place place = snapshot.getValue(Place.class);
             places.add(place);
         }
-        if(places.size() < 4)
-            Util.makeToast(this,"방문하신 장소가 부족합니다!");
-        else {
-            Collections.shuffle(places);
+        Collections.shuffle(places);
+
+        do{
+            if(!placenames.contains(places.get(i).getPlaceName())) {
+                questions.add(places.get(i));
+                placenames.add(places.get(i).getPlaceName());
+            }
+            i++;
+        }while(!(questions.size()==4 || i==places.size()));
+
+        if(questions.size()==4){
             ANSWER = (int)(Math.random()*4);
-            setData(places, ANSWER);
+            setData(questions, ANSWER);
         }
+        else
+            Util.makeToast(this,"방문하신 장소가 부족합니다!");
     }
 
     @Override
@@ -130,10 +137,13 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
     @Override
     public void check(int i) {
         quizCount++;
+        databaseReference.child("users").child(uidSingleton.getUid()).child("quizCount").setValue(quizCount);
         if(ANSWER == i) {
+            ansCount++;
+            databaseReference.child("users").child(uidSingleton.getUid()).child("ansCount").setValue(ansCount);
+
             Util.makeToast(this, "정답입니다!");
             databaseReference.child("users").child(uidSingleton.getUid()).child("places").addListenerForSingleValueEvent(this);
-            ansCount++;
         }
         else
             Util.makeToast(this,"오답입니다!ㅠ");
