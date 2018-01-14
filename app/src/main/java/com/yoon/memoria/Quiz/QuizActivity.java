@@ -111,22 +111,28 @@ public class QuizActivity extends AppCompatActivity implements QuizContract.View
             Place place = snapshot.getValue(Place.class);
             places.add(place);
         }
-        Collections.shuffle(places);
 
-        do{
-            if(!placenames.contains(places.get(i).getPlaceName())) {
-                questions.add(places.get(i));
-                placenames.add(places.get(i).getPlaceName());
-            }
-            i++;
-        }while(!(questions.size()==4 || i==places.size()));
+        if(places.size() > 0) {
+            Collections.shuffle(places);
 
-        if(questions.size()==4){
-            ANSWER = (int)(Math.random()*4);
-            setData(questions, ANSWER);
+            do {
+                if (!placenames.contains(places.get(i).getPlaceName())) {
+                    questions.add(places.get(i));
+                    placenames.add(places.get(i).getPlaceName());
+                }
+                i++;
+            } while (!(questions.size() == 4 || i == places.size()));
+
+            if (questions.size() == 4) {
+                ANSWER = (int) (Math.random() * 4);
+                setData(questions, ANSWER);
+            } else
+                Util.makeToast(this, "방문하신 장소가 부족합니다!");
         }
+
         else
-            Util.makeToast(this,"방문하신 장소가 부족합니다!");
+            Util.makeToast(this, "방문하신 장소가 부족합니다!");
+
     }
 
     @Override
