@@ -110,6 +110,12 @@ public class CommentActivity extends AppCompatActivity implements CommentContrac
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        databaseReference.child("posts").child(postUid).child("comments").removeEventListener(this);
+    }
+
+    @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         List<Comment> commentList = new ArrayList<>(0);
         for(DataSnapshot snapshot : dataSnapshot.getChildren()){

@@ -18,7 +18,8 @@
             android:background="@drawable/cardview_border">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="@dimen/default_padding">
                 <ImageView
                     android:layout_width="@dimen/list_photo_place"
                     android:layout_height="@dimen/list_photo_place"
@@ -31,8 +32,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/place_photo"
-                    android:layout_marginRight="@dimen/default_padding">
+                    android:layout_toRightOf="@+id/place_photo">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

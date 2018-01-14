@@ -10,7 +10,7 @@
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbarSize"
             android:id="@+id/placeToolbar"
             android:background="@color/colorPrimary"
             android:layout_alignParentTop="true"
@@ -26,6 +26,7 @@
                 android:layout_gravity="center"
                 android:textSize="@dimen/profile_nickname_size"
                 android:textColor="@color/white"
+                android:includeFontPadding="false"
                 android:fontFamily="@font/bold_font"
                 android:text="@string/today_place"/>
         </android.support.v7.widget.Toolbar>

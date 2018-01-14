@@ -54,7 +54,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBGKRSCNLpKUqwV4M3cdScrUuZ6XvY7eLE" />
+            android:value="@string/googleSigning_key" />
 
         <activity android:name=".User.UserActivity" />
         <activity android:name=".FollowList.FollowListActivity" />

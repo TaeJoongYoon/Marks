@@ -17,7 +17,7 @@
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbarSize"
             android:id="@+id/quizToolbar"
             android:background="@color/colorPrimary"
             android:layout_alignParentTop="true"
@@ -26,6 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:includeFontPadding="false"
                 android:textSize="@dimen/profile_nickname_size"
                 android:textColor="@color/white"
                 android:fontFamily="@font/bold_font"

@@ -17,7 +17,7 @@
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbarSize"
             android:id="@+id/follow_toolbar"
             android:background="@color/colorPrimary"
             android:layout_alignParentTop="true">
@@ -28,6 +28,7 @@
                 android:textSize="@dimen/profile_nickname_size"
                 android:textColor="@color/white"
                 android:fontFamily="@font/bold_font"
+                android:includeFontPadding="false"
                 android:id="@+id/follow_name"/>
         </android.support.v7.widget.Toolbar>
 

@@ -3,10 +3,6 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'key0'
-            keyPassword 'ahzk0225'
-            storeFile file('C:/Users/Yoon/Desktop/Java/Memoria/app/TJKey.jks')
-            storePassword 'ahzk0225'
         }
     }
     compileSdkVersion 26
@@ -14,8 +10,8 @@ android {
         applicationId "com.yoon.memoria"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.config
     }

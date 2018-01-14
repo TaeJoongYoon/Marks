@@ -62,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/comment_recyclerView"
-            android:layout_below="@+id/line1">
+            android:layout_below="@+id/line1"
+            android:layout_above="@+id/line3">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -86,6 +87,8 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="댓글을 입력해주세요."
+                android:fontFamily="@font/regular_font"
                 android:layout_weight="1"
                 android:id="@+id/comment_text"/>
             <Button

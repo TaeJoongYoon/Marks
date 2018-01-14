@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="toolbarSize">56dp</dimen>
+
     <dimen name="default_padding">16dp</dimen>
     <dimen name="list_item_avatar_size">30dp</dimen>
     <dimen name="list_item_text_margin">3dp</dimen>
@@ -12,7 +14,7 @@
     <dimen name="profile_follow_progress_size">24dp</dimen>
     <dimen name="profile_follow_button_height">36dp</dimen>
 
-    <dimen name="profile_nickname_size">20sp</dimen>
+    <dimen name="profile_nickname_size">18sp</dimen>
     <dimen name="title_nickname_size">16sp</dimen>
     <dimen name="default_textSize">14sp</dimen>
     <dimen name="small_textSize">12sp</dimen>
