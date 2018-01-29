@@ -6,10 +6,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -196,10 +198,33 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                     if(postLocation == null)
                         Util.makeToast(getActivity(),"위치가 확인되지 않습니다");
                     else {
-                        Intent intent = new Intent(getActivity(), PostingActivity.class);
-                        intent.putExtra("latitude", postLocation.getLatitude());
-                        intent.putExtra("longitude", postLocation.getLongitude());
-                        getActivity().startActivityForResult(intent, Util.POST_CODE);
+                        new AlertDialog.Builder(getContext())
+                                .setMessage("어느위치에 글을 작성하고 싶으세요?")
+                                .setPositiveButton("현재위치", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(getActivity(), PostingActivity.class);
+                                        intent.putExtra("latitude", postLocation.getLatitude());
+                                        intent.putExtra("longitude", postLocation.getLongitude());
+                                        dialog.dismiss();
+                                        getActivity().startActivityForResult(intent, Util.POST_CODE);
+                                    }
+                                })
+                                .setNegativeButton("검색위치", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if(currentMarker != null) {
+                                            Intent intent = new Intent(getActivity(), PostingActivity.class);
+                                            intent.putExtra("latitude", currentMarker.getPosition().latitude);
+                                            intent.putExtra("longitude", currentMarker.getPosition().longitude);
+                                            dialog.dismiss();
+                                            getActivity().startActivityForResult(intent, Util.POST_CODE);
+                                        }
+                                        else {
+                                            Util.makeToast(getContext(), "장소를 먼저 검색해주세요!");
+                                            dialog.dismiss();
+                                        }
+                                    }
+                                })
+                                .show();
                     }
                     break;
             }
@@ -217,6 +242,10 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
         //super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             case Util.POST_CODE:
+                if(currentMarker != null){
+                    currentMarker.remove();
+                    currentMarker = null;
+                }
                 if(resultCode == Activity.RESULT_OK){
                     Util.makeToast(getActivity(),"글쓰기 성공");
                 }
@@ -238,7 +267,10 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 location.setLatitude(place.getLatLng().latitude);
                 location.setLongitude(place.getLatLng().longitude);
 
-                if (currentMarker != null) currentMarker.remove();
+                if (currentMarker != null){
+                    currentMarker.remove();
+                    currentMarker = null;
+                }
                 MarkerOptions markerOptions = presenter.setSearchLocation(location,place.getName().toString(),place.getAddress().toString());
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -295,9 +327,26 @@ public class MapFragment extends Fragment implements MapContract.View, OnMapRead
                 toReading(marker);
             return true;
         });
+        googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+            }
+        });
         googleMap.setOnMapClickListener(latLng -> {
-            if(currentMarker != null)
+            if(currentMarker != null) {
                 currentMarker.remove();
+                currentMarker = null;
+            }
         });
     }
 

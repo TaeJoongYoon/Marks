@@ -123,6 +123,8 @@ public class PostingActivity extends AppCompatActivity implements PostingContrac
     @Override
     public void post_OK(){
         Intent returnIntent = new Intent();
+        returnIntent.putExtra("latitude",latitude);
+        returnIntent.putExtra("longitude",longitude);
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
