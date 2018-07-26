@@ -18,4 +18,4 @@ I use Firebase (Database, Auth , Storage)
 
 Released January 24, 2018 on Google Play Store
 
-[Download URL](https://play.google.com/store/apps/details?id=com.yoon.memoria)
+[Download Link](https://play.google.com/store/apps/details?id=com.yoon.memoria)
